@@ -19,13 +19,31 @@
 
 
 # Rationale and Research Questions
+The global climate crisis has intensified over the past decade, with rising temperatures, air pollution, and energy insecurity threatening the health and stability of communities worldwide. Carbon dioxide (CO₂) emissions from fossil fuel combustion are a primary driver of climate change, while exposure to fine particulate matter (PM2.5) has been strongly linked to adverse health outcomes such as respiratory and cardiovascular disease. Meanwhile, the transition to renewable energy represents a critical pathway for reducing both greenhouse gas emissions and harmful air pollutants. Given the importance of environmental indicators in evaluating national progress toward sustainability, this study aims to explore the interplay between CO₂ emissions, PM2.5 pollution, and renewable energy adoption in the context of global development goals. 
 
+We selected data from the World Bank’s World Development Indicators, which offer a reliable, standardized, and accessible source for cross-country comparisons. The four countries in our study, which are Germany, the United States, China, and Colombia, were chosen to provide a balanced perspective between developed and developing economies. These nations vary significantly in their energy structures, industrial activities, environmental policies, and climate vulnerabilities. The three metrics— CO₂ emissions per capita, PM2.5 air pollution exposure, and renewable energy share in total consumption— were selected due to their relevance to key UN Sustainable Development Goals (SDGs 3, 7, and 13) and their interconnected impacts on environmental and human health. 
+
+To guide our analysis, we propose the following research questions: 
+
+How have CO₂ emissions, PM2.5 exposure, and renewable energy usage evolved from 2010 to 2020 in Germany, the United States, China, and Colombia? 
+
+What is the relationship between renewable energy adoption and CO₂ emissions across countries and over time? 
+
+Are there observable correlations between CO₂ emissions and PM2.5 pollution exposure? 
+
+Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges? 
 
 
 \newpage
 
 # Dataset Information
+This analysis investigates the relationship between CO₂ emissions and three environmental and public health variables—renewable energy consumption, PM2.5 air pollution, and access to clean cooking fuels—across two developed countries (Germany and the United States) and two developing countries (China and Colombia). The goal is to understand whether higher renewable energy adoption, cleaner air, and improved access to clean fuels are associated with lower carbon emissions in these national contexts from 2010 to 2020. 
 
+The data for this project were collected from the World Bank Databank, specifically from the World Development Indicators (WDI) dataset. These indicators are sourced from officially recognized international organizations and represent some of the most comprehensive and reliable global development data available. The WDI aggregates national, regional, and global statistics on topics related to environmental sustainability, public health, and economic growth. 
+
+The final dataset includes annual values for the following four countries: United States, Germany, China, and Colombia, covering four key variables: (1) CO₂ Emissions (metric tons per capita), (2) Renewable Energy Consumption (% of total final energy consumption), (3) PM2.5 Pollution Exposure (mean annual exposure in µg/m³), and (4) Access to Clean Cooking Fuels (% of total population). 
+
+These indicators were selected for their direct relevance to SDG 3 (Good Health and Well-being), SDG 7 (Affordable and Clean Energy), and SDG 13 (Climate Action). Together, these variables form the foundation for analyzing how environmental and energy infrastructure development correlate with greenhouse gas emissions. 
 
 
 \newpage
