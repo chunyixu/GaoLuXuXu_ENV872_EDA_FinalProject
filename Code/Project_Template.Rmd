@@ -19,6 +19,7 @@ library (ggplot2)
 library(tidyverse)
 library (lubridate)
 library(dplyr)
+library(writexl)
 
 
 # Set your ggplot theme
@@ -37,69 +38,40 @@ my.default.theme <- theme_classic(base_size = 15) +
 theme_set(my.default.theme)
 
 # Load your datasets
-Sus_Env <- read_excel("/Users/xuchunyi/Desktop/GaoLuXuXu_ENV872_EDA_FinalProject/GaoLuXuXu_ENV872_EDA_FinalProject/Raw_Data/P_Data_Extract_From_World_Development_Indicators_Version1.xlsx")
+Sus_Env <- read_excel("/Users/xuchunyi/Desktop/GaoLuXuXu_ENV872_EDA_FinalProject/GaoLuXuXu_ENV872_EDA_FinalProject/Raw_Data/Sus_Env.xlsx")
 
 #Viewing the structure of the dataset
 dim (Sus_Env)
 
 # Data Wrangling
 ##Removing unnecessary rows and replacing missing values with N/A
-Sus_Env_Processed <- Sus_Env %>% 
+Sus_Env_Step1 <- Sus_Env %>% 
   na.omit() %>%
   mutate(`2020` = na_if(`2020`, '..'))  
 
 ##Changing the year column to character
-Sus_Env_Processed <- Sus_Env_Processed %>%
-  mutate(across(4:ncol(Sus_Env_Processed), as.character))
+Sus_Env_Step1 <- Sus_Env_Step1 %>%
+  mutate(across(4:ncol(Sus_Env_Step1), as.character))
 
 ##Reorganizing the dataset
-Sus_Env_Processed2 <- Sus_Env_Processed %>%
+Sus_Env_Processed <- Sus_Env_Step1 %>%
   pivot_longer(cols = -c("Country Code", "Country Name", "Series Name"), 
                names_to = "Year",      
                values_to = "Value")  
 
 ##Checking the class of the variable Value, and the result is character
-class (Sus_Env_Processed2$Value)
+class (Sus_Env_Processed$Value)
 
 ##Converting the Value to a numeric variable
-Sus_Env_Processed2 <- Sus_Env_Processed2 %>%
+Sus_Env_Processed <- Sus_Env_Processed %>%
   mutate(Value = as.numeric(Value))
 
 ##Checking the class of the variable Value, and the result is numeric
-class (Sus_Env_Processed2$Value)
+class (Sus_Env_Processed$Value)
 
-
-##Creating separate datasets for four variables of interest
-PM <- Sus_Env_Processed2 %>% filter(`Series Name` == "PM")
-CO2 <- Sus_Env_Processed2 %>% filter(`Series Name` == "CO2")
-Renew <- Sus_Env_Processed2 %>% filter(`Series Name` == "Renew")
-Cook <- Sus_Env_Processed2 %>% filter(`Series Name` == "Cook")
-
-##Creating separate datasets regarding each variable of interest across four countries
-###PM
-PM_USA <- PM %>% filter(`Country Code` == "USA")
-PM_DEU <- PM %>% filter(`Country Code` == "DEU")
-PM_COL <- PM %>% filter(`Country Code` == "COL")
-PM_CHN <- PM %>% filter(`Country Code` == "CHN")
-
-###CO2
-CO2_USA <- CO2 %>% filter(`Country Code` == "USA")
-CO2_DEU <- CO2 %>% filter(`Country Code` == "DEU")
-CO2_COL <- CO2 %>% filter(`Country Code` == "COL")
-CO2_CHN <- CO2 %>% filter(`Country Code` == "CHN")
-
-###Renew
-Renew_USA <- Renew %>% filter(`Country Code` == "USA")
-Renew_DEU <- Renew %>% filter(`Country Code` == "DEU")
-Renew_COL <- Renew %>% filter(`Country Code` == "COL")
-Renew_CHN <- Renew %>% filter(`Country Code` == "CHN")
-
-###Cook
-Cook_USA <- Cook %>% filter(`Country Code` == "USA")
-Cook_DEU <- Cook %>% filter(`Country Code` == "DEU")
-Cook_COL <- Cook %>% filter(`Country Code` == "COL")
-Cook_CHN <- Cook %>% filter(`Country Code` == "CHN")
-
+#Saving the processed dataset
+output_file <- "/Users/xuchunyi/Desktop/GaoLuXuXu_ENV872_EDA_FinalProject/GaoLuXuXu_ENV872_EDA_FinalProject/Processed_Data/Sus_Env_Processed.xlsx"
+write_xlsx(Sus_Env_Processed, path = output_file)
 
 ```
 
@@ -138,6 +110,58 @@ These indicators were selected for their direct relevance to SDG 3 (Good Health 
 The exploratory analysis of CO₂ emissions data involved initial visualizations of per capita emissions across four countries (United States, Germany, China, and Colombia) from 2010-2020. After preliminary graphs revealed scaling challenges due to wide variations between nations, the y-axis was adjusted to better display trends while preserving comparisons. Examining differences in emission levels, trajectories, and volatility helped identify potential patterns worthy of deeper investigation in subsequent analysis.
 
 ```{r setup, include=FALSE}
+##Creating separate datasets for four variables of interest
+PM <- Sus_Env_Processed2 %>% 
+  filter(`Series Name` == "PM")
+CO2 <- Sus_Env_Processed2 %>% 
+  filter(`Series Name` == "CO2")
+Renew <- Sus_Env_Processed2 %>% 
+  filter(`Series Name` == "Renew")
+Cook <- Sus_Env_Processed2 %>% 
+  filter(`Series Name` == "Cook")
+
+##Creating separate datasets regarding each variable of interest across four countries
+###PM
+PM_USA <- PM %>% 
+  filter(`Country Code` == "USA")
+PM_DEU <- PM %>% 
+  filter(`Country Code` == "DEU")
+PM_COL <- PM %>% 
+  filter(`Country Code` == "COL")
+PM_CHN <- PM %>% 
+  filter(`Country Code` == "CHN")
+
+###CO2
+CO2_USA <- CO2 %>% 
+  filter(`Country Code` == "USA")
+CO2_DEU <- CO2 %>% 
+  filter(`Country Code` == "DEU")
+CO2_COL <- CO2 %>% 
+  filter(`Country Code` == "COL")
+CO2_CHN <- CO2 %>% 
+  filter(`Country Code` == "CHN")
+
+###Renew
+Renew_USA <- Renew %>% 
+  filter(`Country Code` == "USA")
+Renew_DEU <- Renew %>% 
+  filter(`Country Code` == "DEU")
+Renew_COL <- Renew %>% 
+  filter(`Country Code` == "COL")
+Renew_CHN <- Renew %>% 
+  filter(`Country Code` == "CHN")
+
+###Cook
+Cook_USA <- Cook %>% 
+  filter(`Country Code` == "USA")
+Cook_DEU <- Cook %>% 
+  filter(`Country Code` == "DEU")
+Cook_COL <- Cook %>% 
+  filter(`Country Code` == "COL")
+Cook_CHN <- Cook %>% 
+  filter(`Country Code` == "CHN")
+
+
 # Normalized to 2010 values for comparison
 
 ```
