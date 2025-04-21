@@ -53,47 +53,28 @@ The exploratory analysis of CO₂ emissions data involved initial visualizations
 
 ```{r setup, include=FALSE}
 # Normalized to 2010 values for comparison
-CO2_normalized <- CO2 %>%
-  group_by(`Country Code`) %>%
-  mutate(Normalized = Index / first(Index))
 
-ggplot(CO2_normalized, aes(x = Year, y = Normalized, color = `Country Code`, group = `Country Code`)) +
-  geom_line(linewidth = 1) +
-  scale_color_manual(values = c("CHN" = "red", "COL" = "darkgreen", 
-                                "DEU" = "turquoise", "USA" = "purple"),
-                     labels = c("China", "Colombia", "Germany", "USA")) +
-  labs(title = "Normalized CO₂ Emissions (2010 = 1.0)", 
-       y = "Relative to 2010 Levels") +
-  theme_minimal() +
-  theme(legend.position = "bottom")
 ```
 
-This normalized view highlights that while absolute emissions varied greatly:
 
-The U.S. achieved the largest relative reduction (-21%)
-
-China's emissions grew the most (+28%)
-
-Colombia remained stable (±3%)
-
-Germany showed moderate decline (-14%)
-
-These preliminary visualizations suggest fundamentally different emission trajectories across countries, which the subsequent analysis will examine in greater depth through statistical comparisons and policy context.
 
 \newpage
 
 # Analysis
-## Question 1: <How have CO₂ emissions, PM2.5 exposure, and renewable energy usage evolved from 2010 to 2020 in Germany, the United States, China, and Colombia?>
+## Question 1: How have CO₂ emissions, PM2.5 exposure, and renewable energy usage evolved from 2010 to 2020 in Germany, the United States, China, and Colombia?
+```{r}
+
+```
 
 
 
-## Question 2: 
+## Question 2: What is the relationship between renewable energy adoption and CO₂ emissions across countries and over time?
 
 
-## Question 3: 
+## Question 3: Are there observable correlations between CO₂ emissions and PM2.5 pollution exposure?
 
 
-## Question 4: 
+## Question 4: Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges?
 
 
 \newpage
