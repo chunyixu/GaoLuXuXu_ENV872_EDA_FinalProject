@@ -7,13 +7,41 @@
 \newpage
 
 ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 # Set your working directory
+library (here)
+##Checking working directory is the project folder
+here()
 
 # Load your packages
+library(readxl)
+library (ggplot2)
+library(tidyverse)
+library (lubridate)
+library(dplyr)
 
 # Set your ggplot theme
+my.default.theme <- theme_classic(base_size = 15) +
+  theme(plot.background = element_rect(color='white',fill='white'),
+        plot.title = element_text(color='black', size = 15),
+        axis.text = element_text(color = 'black',size = 10), 
+        panel.grid.minor = element_line(size = 0.5),
+        panel.grid.major = element_line(size = 0.5),
+        legend.background = element_rect(color='white', fill = 'white'),
+        legend.position = "right",
+        legend.title = element_text(color='black',size=10),
+        legend.text = element_text(size = 10))
+
+#Setting the theme as the default theme
+theme_set(my.default.theme)
 
 # Load your datasets
+ENVDATA <- read_excel("/home/guest/GaoLuXuXu_ENV872_EDA_FinalProject/Data/Raw/P_Data_Extract_From_World_Development_Indicators_Version1.xlsx")
+
+
+# Data Wrangling
+
+
 
 ```
 
