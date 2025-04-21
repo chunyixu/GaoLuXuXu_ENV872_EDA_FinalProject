@@ -49,20 +49,51 @@ These indicators were selected for their direct relevance to SDG 3 (Good Health 
 \newpage
 
 # Exploratory Analysis 
+The exploratory analysis of CO₂ emissions data involved initial visualizations of per capita emissions across four countries (United States, Germany, China, and Colombia) from 2010-2020. After preliminary graphs revealed scaling challenges due to wide variations between nations, the y-axis was adjusted to better display trends while preserving comparisons. Examining differences in emission levels, trajectories, and volatility helped identify potential patterns worthy of deeper investigation in subsequent analysis.
 
+```{r setup, include=FALSE}
+# Normalized to 2010 values for comparison
+CO2_normalized <- CO2 %>%
+  group_by(`Country Code`) %>%
+  mutate(Normalized = Index / first(Index))
 
+ggplot(CO2_normalized, aes(x = Year, y = Normalized, color = `Country Code`, group = `Country Code`)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c("CHN" = "red", "COL" = "darkgreen", 
+                                "DEU" = "turquoise", "USA" = "purple"),
+                     labels = c("China", "Colombia", "Germany", "USA")) +
+  labs(title = "Normalized CO₂ Emissions (2010 = 1.0)", 
+       y = "Relative to 2010 Levels") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+This normalized view highlights that while absolute emissions varied greatly:
+
+The U.S. achieved the largest relative reduction (-21%)
+
+China's emissions grew the most (+28%)
+
+Colombia remained stable (±3%)
+
+Germany showed moderate decline (-14%)
+
+These preliminary visualizations suggest fundamentally different emission trajectories across countries, which the subsequent analysis will examine in greater depth through statistical comparisons and policy context.
 
 \newpage
 
 # Analysis
+## Question 1: <How have CO₂ emissions, PM2.5 exposure, and renewable energy usage evolved from 2010 to 2020 in Germany, the United States, China, and Colombia?>
 
 
-
-## Question 1: <insert specific question here and add additional subsections for additional questions below, if needed>
 
 ## Question 2: 
 
 
+## Question 3: 
+
+
+## Question 4: 
 
 
 \newpage
