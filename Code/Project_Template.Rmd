@@ -340,21 +340,21 @@ Renew_CHN <- Renew %>%
 
 
 #cross country comparison for renewable energy
-# Find the max and min Index values
-max_index <- which.max(Renew$Index)
-min_index <- which.min(Renew$Index)
+# Find the max and min Value values
+max_value <- which.max(Renew$Value)
+min_value <- which.min(Renew$Value)
 
 # Create separate annotation data with nudging
-label_data <- Renew[c(max_index, min_index), ]
+label_data <- Renew[c(max_value, min_value), ]
 label_data$nudge_y <- c(-0.2, 0.5)     # Adjust label position: max down, min up
 label_data$vjust   <- c(1.5, -0.5)
 
 # Plot the line graph
-ggplot(Renew, aes(x = Year, y = Index, group = `Country Code`, color = `Country Code`)) +
+ggplot(Renew, aes(x = Year, y = Value, group = `Country Code`, color = `Country Code`)) +
   geom_line(size = 1.5) +
-  geom_text(data = label_data[1, ], aes(label = Index), 
+  geom_text(data = label_data[1, ], aes(label = Value), 
             vjust = label_data$vjust[1], nudge_y = label_data$nudge_y[1], size = 4) +
-  geom_text(data = label_data[2, ], aes(label = Index), 
+  geom_text(data = label_data[2, ], aes(label = Value), 
             vjust = label_data$vjust[2], nudge_y = label_data$nudge_y[2], size = 4) +
   labs(
     title = "Cross Country Comparison of Renewable Energy Trends", 
@@ -374,14 +374,14 @@ The World Bank tracks renewable energy use as a percentage of total energy consu
 
 ```{r RQ1.2, echo=FALSE}
 # Calculate the correlation between Renewable and CO2
-correlationCO2COL <- cor(CO2_COL$Index, RenewCOL$Index, method = "pearson")
-print(correlationCOL)
-correlationCO2CHN <- cor(CO2_COL$Index, RenewCHN$Index, method = "pearson")
-print(correlationCHN)
-correlationCO2USA <- cor(CO2_COL$Index, RenewUSA$Index, method = "pearson")
+correlationCO2COL <- cor(CO2_COL$Value, Renew_COL$Value, method = "pearson")
+print(correlationCO2COL)
+correlationCO2CHN <- cor(CO2_COL$Value, Renew_CHN$Value, method = "pearson")
+print(correlationCO2CHN)
+correlationCO2USA <- cor(CO2_COL$Value, Renew_USA$Value, method = "pearson")
 print(correlationCO2USA)
-correlationCO2DEU <- cor(CO2_COL$Index, RenewDEU$Index, method = "pearson")
-print(correlationDEU)
+correlationCO2DEU <- cor(CO2_COL$Value, Renew_DEU$Value, method = "pearson")
+print(correlationCO2DEU)
 ```
 The correlation analysis reveals no universal relationship between renewable energy adoption and CO₂ emissions. While China shows a slight negative trend (-0.15), other countries (Colombia, USA, Germany) exhibit positive or neutral correlations, suggesting renewables alone are insufficient to cut emissions without explicit fossil fuel phase-outs. This underscores that national context—energy mix, policy, and economic growth—drives whether renewables effectively mitigate CO₂.
 
@@ -390,17 +390,17 @@ The correlation analysis reveals no universal relationship between renewable ene
 ## Question 2: Are there observable correlations between CO₂ emissions and PM2.5 pollution exposure?
 
 ```{r RQ2.1, echo=FALSE}
-# Round Index values to 2 decimal places
-PM$Index <- round(PM$Index, 2)
+# Round Value values to 2 decimal places
+PM$Value <- round(PM$Value, 2)
 
 # Re-run plotting code
-ggplot(PM, aes(x = Year, y = Index, group = `Country Code`, color = `Country Code`)) +
+ggplot(PM, aes(x = Year, y = Value, group = `Country Code`, color = `Country Code`)) +
   geom_line(size = 1.5) +
   labs(title = "Cross Country Comparison of PM2.5 Air Pollution", 
        x = "Year", y = "PM2.5 (µg/m³)") +
   geom_text(
     data = PM[c(max_index, min_index), ],
-    aes(label = Index),  # Now shows 2 decimal places
+    aes(label = Value),  # Now shows 2 decimal places
     vjust = -0.5, hjust = 0.8, size = 4,
     nudge_x = 0.1, nudge_y = 0.1
   ) +
