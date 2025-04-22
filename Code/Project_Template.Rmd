@@ -1,3 +1,11 @@
+---
+title: 'Interconnected Environmental Challenges: CO₂ Emissions, Renewable Energy, and Air Pollution in the Context of UN Sustainability Goals'
+author: "Jessie Gao, Lu Liu, Chunyi Xu, and Lauren Xu" 
+date: "Spring 2025"
+output: pdf_document
+toc: true
+---
+
 \newpage
 \tableofcontents 
 \newpage
@@ -99,7 +107,7 @@ To guide our analysis, we propose the following research questions:
 # Dataset Information
 The data for this project were collected from the World Bank Databank, specifically from the World Development Indicators (WDI) dataset. These indicators are sourced from officially recognized international organizations and represent some of the most comprehensive and reliable global development data available. The WDI aggregates national, regional, and global statistics on topics related to environmental sustainability, public health, and economic growth. 
 
-The final dataset includes annual values for the following four countries: United States, Germany, China, and Colombia, covering four key variables: (1) CO₂ Emissions (metric tons per capita), (2) Renewable Energy Consumption (% of total final energy consumption), and (3) PM2.5 Pollution Exposure (mean annual exposure in µg/m³). 
+The final dataset includes annual values for the following four countries: United States, Germany, China, and Colombia, covering four key indicators: (1) CO₂ Emissions (metric tons per capita), (2) Renewable Energy Consumption (% of total final energy consumption), and (3) PM2.5 Pollution Exposure (mean annual exposure in µg/m³). 
 
 These indicators were selected for their direct relevance to SDG 3 (Good Health and Well-being), SDG 7 (Affordable and Clean Energy), and SDG 13 (Climate Action). Together, these variables form the foundation for analyzing how environmental and energy infrastructure development correlate with greenhouse gas emissions. 
 
@@ -121,20 +129,43 @@ Data preparation was carried out using the R programming language, with heavy us
 
 
 # Exploratory Analysis 
-The exploratory analysis of CO₂ emissions data involved initial visualizations of per capita emissions across four countries (United States, Germany, China, and Colombia) from 2010-2020. After preliminary graphs revealed scaling challenges due to wide variations between nations, the y-axis was adjusted to better display trends while preserving comparisons. Examining differences in emission levels, trajectories, and volatility helped identify potential patterns worthy of deeper investigation in subsequent analysis.
+The summary statistics for three indicators from 2010 to 2020 across four countries are demonstrated below as part of the data exploration. 
+```{r setup, include=FALSE}
+##Creating separate datasets for four variables of interest
+PM <- Sus_Env_Processed %>% 
+  filter(`Series Name` == "PM")
+CO2 <- Sus_Env_Processed %>% 
+  filter(`Series Name` == "CO2")
+Renew <- Sus_Env_Processed %>% 
+  filter(`Series Name` == "Renew")
+
+summary_stats <- Sus_Env_Processed %>%
+  group_by(`Series Name`) %>%
+  summarize(
+    n_obs = n(),  
+    mean = mean(Value, na.rm = TRUE),  
+    max = max(Value, na.rm = TRUE),    
+    min = min(Value, na.rm = TRUE),    
+    sd = sd(Value, na.rm = TRUE),     
+    range = max(Value, na.rm = TRUE) - min(Value, na.rm = TRUE) 
+  )
+
+knitr::kable(summary_stats, caption = "Summary Statistics for CO2, PM, and Renew", col.names = c("Series Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
+
+
+
+
+```
+
+
 
 How have CO₂ emissions, PM2.5 exposure, and renewable energy usage evolved from 2010 to 2020 in Germany, the United States, China, and Colombia? 
 
+The exploratory analysis of CO₂ emissions data involved initial visualizations of per capita emissions across four countries (United States, Germany, China, and Colombia) from 2010-2020. After preliminary graphs revealed scaling challenges due to wide variations between nations, the y-axis was adjusted to better display trends while preserving comparisons. Examining differences in emission levels, trajectories, and volatility helped identify potential patterns worthy of deeper investigation in subsequent analysis.
+
 ```{r setup, include=FALSE}
-##Creating separate datasets for four variables of interest
-PM <- Sus_Env_Processed2 %>% 
-  filter(`Series Name` == "PM")
-CO2 <- Sus_Env_Processed2 %>% 
-  filter(`Series Name` == "CO2")
-Renew <- Sus_Env_Processed2 %>% 
-  filter(`Series Name` == "Renew")
-Cook <- Sus_Env_Processed2 %>% 
-  filter(`Series Name` == "Cook")
+knitr::opts_chunk$set(echo = TRUE)
+
 
 ##Creating separate datasets regarding each variable of interest across four countries
 ###PM
@@ -167,40 +198,57 @@ Renew_COL <- Renew %>%
 Renew_CHN <- Renew %>% 
   filter(`Country Code` == "CHN")
 
-###Cook
-Cook_USA <- Cook %>% 
-  filter(`Country Code` == "USA")
-Cook_DEU <- Cook %>% 
-  filter(`Country Code` == "DEU")
-Cook_COL <- Cook %>% 
-  filter(`Country Code` == "COL")
-Cook_CHN <- Cook %>% 
-  filter(`Country Code` == "CHN")
-
-
 # Normalized to 2010 values for comparison
+CO2_normalized <- CO2 %>%
+  group_by(`Country Code`) %>%
+  mutate(Normalized = Value / first(Value))
+
+CO2_normalized_graph <- ggplot(CO2_normalized, aes(x = Year, y = Normalized, color = `Country Code`, group = `Country Code`)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c("CHN" = "red", "COL" = "darkgreen", 
+                                "DEU" = "turquoise", "USA" = "purple"),
+                     labels = c("China", "Colombia", "Germany", "USA")) +
+  labs(title = "Normalized CO2 Emissions (2010 = 1.0)", 
+       y = "Relative to 2010 Levels") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+print (CO2_normalized_graph)
+
+
+
+
 
 ```
 
+This normalized view highlights that while absolute emissions varied greatly:
 
+The U.S. achieved the largest relative reduction (-21%)
+
+China's emissions grew the most (+28%)
+
+Colombia remained stable (±3%)
+
+Germany showed moderate decline (-14%)
+
+These preliminary visualizations suggest fundamentally different emission trajectories across countries, which the subsequent analysis will examine in greater depth through statistical comparisons and policy context.
 
 \newpage
 
 # Analysis
-## Question 1: How have CO₂ emissions, PM2.5 exposure, and renewable energy usage evolved from 2010 to 2020 in Germany, the United States, China, and Colombia?
+## Question 1: What is the relationship between renewable energy adoption and CO₂ emissions across countries and over time?
 ```{r}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+
 
 ```
 
 
-
-## Question 2: What is the relationship between renewable energy adoption and CO₂ emissions across countries and over time?
-
-
-## Question 3: Are there observable correlations between CO₂ emissions and PM2.5 pollution exposure?
+## Question 2: Are there observable correlations between CO₂ emissions and PM2.5 pollution exposure?
 
 
-## Question 4: Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges?
+## Question 3: Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges?
 
 
 \newpage
