@@ -105,6 +105,16 @@ These indicators were selected for their direct relevance to SDG 3 (Good Health 
 
 By leveraging this dataset, this project can investigate the relationship between CO₂ emissions and two environmental and public health variables—renewable energy consumption, and PM2.5 air pollution across two developed countries (Germany and the United States) and two developing countries (China and Colombia). The goal is to understand whether higher renewable energy adoption, cleaner air, and improved access to clean fuels are associated with lower carbon emissions in these national contexts from 2010 to 2020. 
 
+Table: Dataset Structure Summary
+
+Variable  | Description
+------------: | :-------------
+Country Name  | Name of the Country
+Country Code  | Three-letter Country Code
+Series Name  | Indicator Name
+Year (2010-2020)  | Values for the respective indicator for each year
+
+
 \newpage
 # Dataset Wrangling
 Data preparation was carried out using the R programming language, with heavy use of the tidyverse, dplyr, and readxl packages. The data wrangling process involved importing the original World Bank Excel dataset for each of the three variables of four countries using readxl::read_excel(). Unnecessary rows were removed, and missing values were replaced with "N/A" using the na.omit() function and the na_if() function. Then, the year column was converted to a character variable to facilitate data analysis. The dataset was then reshaped to a single panel structure by consolidating year columns into a single "Year" column, reorganizing the corresponding values into a "Value" column, and maintaining key identifiers like "Country Code," "Country Name," and "Series Name" via the pivot_longer () function. Subsequently, the "Value" column was converted to a numeric variable to ensure it is a format suitable for analysis. Finally, the processed dataset was saved as an Excel file in the Processed_Data folder using the write_xlsx() function. In this way, the final dataset was reshaped into a tidy format (long or wide as needed) for visualization and statistical analysis. 
