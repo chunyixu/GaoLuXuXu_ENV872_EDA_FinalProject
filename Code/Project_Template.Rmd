@@ -341,8 +341,8 @@ Renew_CHN <- Renew %>%
 
 #cross country comparison for renewable energy
 # Find the max and min Value values
-max_value <- which.max(Renew$Value)
-min_value <- which.min(Renew$Value)
+max_value_Renew <- which.max(Renew$Value)
+min_value_Renew <- which.min(Renew$Value)
 
 # Create separate annotation data with nudging
 label_data <- Renew[c(max_value, min_value), ]
@@ -399,7 +399,7 @@ ggplot(PM, aes(x = Year, y = Value, group = `Country Code`, color = `Country Cod
   labs(title = "Cross Country Comparison of PM2.5 Air Pollution", 
        x = "Year", y = "PM2.5 (µg/m³)") +
   geom_text(
-    data = PM[c(max_index, min_index), ],
+    data = PM[c(max_value_Renew, min_value_Renew), ],
     aes(label = Value),  # Now shows 2 decimal places
     vjust = -0.5, hjust = 0.8, size = 4,
     nudge_x = 0.1, nudge_y = 0.1
@@ -417,13 +417,13 @@ These findings underscore the effectiveness of integrated policy approaches comb
 
 ```{r RQ2.2, echo=FALSE}
 # Calculate Pearson correlations (linear relationship strength):
-correlationPMCOL <- cor(CO2_COL$Index, PMCOL$Index, 
+correlationPMCOL <- cor(CO2_COL$Value, PM_COL$Value, 
                      method = "pearson", use = "complete.obs")  # Colombia
-correlationPMCHN <- cor(CO2_CHN$Index, PMCHN$Index, 
+correlationPMCHN <- cor(CO2_CHN$Value, PM_CHN$Value, 
                      method = "pearson", use = "complete.obs")  # China
-correlationPMUSA <- cor(CO2_USA$Index, PMUSA$Index,  # Corrected from USACOL to PMUSA
+correlationPMUSA <- cor(CO2_USA$Value, PM_USA$Value,  # Corrected from USACOL to PMUSA
                      method = "pearson", use = "complete.obs")  # USA
-correlationPMDEU <- cor(CO2_DEU$Index, PMDEU$Index, 
+correlationPMDEU <- cor(CO2_DEU$Value, PM_DEU$Value, 
                      method = "pearson", use = "complete.obs")  # Germany
 print(correlationPMCOL)
 print(correlationPMCHN)
