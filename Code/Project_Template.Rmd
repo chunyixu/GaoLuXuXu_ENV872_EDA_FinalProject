@@ -129,7 +129,7 @@ Data preparation was carried out using the R programming language, with heavy us
 
 
 # Exploratory Analysis 
-The following summary statistic table provides an overview of the three indicators from 2010 to 2020, as part of our data exploration.
+The following summary statistic table provides an overview of the three indicators from 2010 to 2020, as part of the data exploration.
 ```{r indicator.summary, echo=FALSE}
 #Computing the mean, maximum value, minimum value, standard deviation, and the range for each indicator
 Summary_Stats_Indicator <- Sus_Env_Processed %>%
@@ -150,7 +150,7 @@ knitr::kable(Summary_Stats_Indicator, caption = "Summary Statistics for CO2, PM,
 
 ```
 
-The following three summary statistic tables provide an overview of the three indicators for each country from 2010 to 2020, as part of our data exploration.
+The following three summary statistic tables provide an overview of the three indicators for each country from 2010 to 2020, as part of the data exploration.
 ```{r indicator.summary.country, echo=FALSE}
 ##Creating separate datasets for three variables of interest
 CO2 <- Sus_Env_Processed %>% 
@@ -160,8 +160,8 @@ Renew <- Sus_Env_Processed %>%
 PM <- Sus_Env_Processed %>% 
   filter(`Series Name` == "PM")
 
-#CO2 Emissions
-##Computing the mean, maximum value, minimum value, standard deviation, and the range for CO2 in each country
+#CO₂ Emissions
+##Computing the mean, maximum value, minimum value, standard deviation, and the range for CO₂ Emissions in each country
 Summary_Stats_CO2 <- CO2 %>%
   group_by(`Country Name`) %>%
   summarize(
@@ -174,7 +174,7 @@ Summary_Stats_CO2 <- CO2 %>%
   )
 
 ##Use the `kable` function to produce the summary statistic table in markdown format
-##Producing the table for the summary statistic for PM2.5 in each country
+##Producing the table for the summary statistic for CO₂ Emissions in each country
 knitr::kable(Summary_Stats_CO2, caption = "Summary Statistics for CO₂ Emissions (metric tons per capita)", col.names = c("Country Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
 
 #Renewable Energy Consumption
@@ -192,11 +192,11 @@ Summary_Stats_Renew <- Renew %>%
 
 ##Use the `kable` function to produce the summary statistic table in markdown format
 ##Producing the table for the summary statistic for renewable energy consumption in each country
-knitr::kable(Summary_Stats_PM, caption = "Summary Statistics for Renewable Energy Consumption (% of total final energy consumption)", col.names = c("Country Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
+knitr::kable(Summary_Stats_Renew, caption = "Summary Statistics for Renewable Energy Consumption (% of total final energy consumption)", col.names = c("Country Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
 
 
 #PM2.5 Pollution Exposure
-##Computing the mean, maximum value, minimum value, standard deviation, and the range for PM2.5 in each country
+##Computing the mean, maximum value, minimum value, standard deviation, and the range for PM2.5 Pollution Exposure in each country
 Summary_Stats_PM <- PM %>%
   group_by(`Country Name`) %>%
   summarize(
@@ -209,21 +209,94 @@ Summary_Stats_PM <- PM %>%
   )
 
 ##Use the `kable` function to produce the summary statistic table in markdown format
-##Producing the table for the summary statistic for PM2.5 in each country
+##Producing the table for the summary statistic for PM2.5 Pollution Exposure in each country
 knitr::kable(Summary_Stats_PM, caption = "Summary Statistics for PM2.5 Pollution Exposure (mean annual exposure in µg/m³)", col.names = c("Country Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
+
+```
+
+The exploratory analysis of CO₂ emissions, PM2.5 exposure, and renewable energy usage data involved initial visualizations of each indicator across four countries (United States, Germany, China, and Colombia) from 2010-2020. After preliminary graphs revealed scaling challenges due to wide variations between nations, the y-axis was adjusted to better display trends while preserving comparisons. Examining differences in each indicator's levels, trajectories, and volatility helped identify potential patterns worthy of deeper investigation in subsequent analysis. In this way, this section could examine how CO₂ emissions, PM2.5 exposure, and renewable energy usage have evolved from 2010 to 2020 in Germany, the United States, China, and Colombia. 
+
+```{r normalized.CO₂ Emissions.country, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Normalized to 2010 values for comparison
+CO2_normalized <- CO2 %>%
+  group_by(`Country Code`) %>%
+  mutate(Normalized = Value / first(Value))
+
+CO2_normalized_graph <- ggplot(CO2_normalized, aes(x = Year, y = Normalized, color = `Country Code`, group = `Country Code`)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c("CHN" = "red", "COL" = "darkgreen", 
+                                "DEU" = "turquoise", "USA" = "purple"),
+                     labels = c("China", "Colombia", "Germany", "USA")) +
+  labs(title = "Normalized CO2 Emissions (2010 = 1.0)", 
+       y = "Relative to 2010 Levels") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+print (CO2_normalized_graph)
+
+
+```
+
+This normalized view highlights that while absolute emissions varied greatly:
+-   The U.S. achieved the largest relative reduction (-21%)
+-   China's emissions grew the most (+28%)
+-   Colombia remained stable (±3%)
+-   Germany showed moderate decline (-14%)
+
+
+```{r normalized.Renewable Energy Consumption.country, echo=FALSE}
+# Normalized to 2010 values for comparison
+Renew_normalized <- Renew %>%
+  group_by(`Country Code`) %>%
+  mutate(Normalized = Value / first(Value))
+
+Renew_normalized_graph <- ggplot(Renew_normalized, aes(x = Year, y = Normalized, color = `Country Code`, group = `Country Code`)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c("CHN" = "red", "COL" = "darkgreen", 
+                                "DEU" = "turquoise", "USA" = "purple"),
+                     labels = c("China", "Colombia", "Germany", "USA")) +
+  labs(title = "Normalized Renewable Energy Consumption (2010 = 1.0)", 
+       y = "Relative to 2010 Levels") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+print (Renew_normalized_graph)
+
 
 ```
 
 
 
-How have CO₂ emissions, PM2.5 exposure, and renewable energy usage evolved from 2010 to 2020 in Germany, the United States, China, and Colombia? 
+```{r normalized.PM2.5 Pollution Exposure.country, echo=FALSE}
+# Normalized to 2010 values for comparison
+PM_normalized <- PM %>%
+  group_by(`Country Code`) %>%
+  mutate(Normalized = Value / first(Value))
 
-The exploratory analysis of CO₂ emissions data involved initial visualizations of per capita emissions across four countries (United States, Germany, China, and Colombia) from 2010-2020. After preliminary graphs revealed scaling challenges due to wide variations between nations, the y-axis was adjusted to better display trends while preserving comparisons. Examining differences in emission levels, trajectories, and volatility helped identify potential patterns worthy of deeper investigation in subsequent analysis.
+PM_normalized_graph <- ggplot(PM_normalized, aes(x = Year, y = Normalized, color = `Country Code`, group = `Country Code`)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c("CHN" = "red", "COL" = "darkgreen", 
+                                "DEU" = "turquoise", "USA" = "purple"),
+                     labels = c("China", "Colombia", "Germany", "USA")) +
+  labs(title = "Normalized PM2.5 Pollution Exposure (2010 = 1.0)", 
+       y = "Relative to 2010 Levels") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+print (PM_normalized_graph)
 
-```{r setup, include=FALSE}
+
+```
+
+
+These preliminary visualizations suggest fundamentally different emission trajectories across countries, which the subsequent analysis will examine in greater depth through statistical comparisons and policy context.
+
+
+
+\newpage
+
+# Analysis
+## Question 1: What is the relationship between renewable energy adoption and CO₂ emissions across countries and over time?
+```{r}
 knitr::opts_chunk$set(echo = TRUE)
-
-
 ##Creating separate datasets regarding each variable of interest across four countries
 ###PM
 PM_USA <- PM %>% 
@@ -254,48 +327,6 @@ Renew_COL <- Renew %>%
   filter(`Country Code` == "COL")
 Renew_CHN <- Renew %>% 
   filter(`Country Code` == "CHN")
-
-# Normalized to 2010 values for comparison
-CO2_normalized <- CO2 %>%
-  group_by(`Country Code`) %>%
-  mutate(Normalized = Value / first(Value))
-
-CO2_normalized_graph <- ggplot(CO2_normalized, aes(x = Year, y = Normalized, color = `Country Code`, group = `Country Code`)) +
-  geom_line(linewidth = 1) +
-  scale_color_manual(values = c("CHN" = "red", "COL" = "darkgreen", 
-                                "DEU" = "turquoise", "USA" = "purple"),
-                     labels = c("China", "Colombia", "Germany", "USA")) +
-  labs(title = "Normalized CO2 Emissions (2010 = 1.0)", 
-       y = "Relative to 2010 Levels") +
-  theme_minimal() +
-  theme(legend.position = "bottom")
-print (CO2_normalized_graph)
-
-
-
-
-
-```
-
-This normalized view highlights that while absolute emissions varied greatly:
-
-The U.S. achieved the largest relative reduction (-21%)
-
-China's emissions grew the most (+28%)
-
-Colombia remained stable (±3%)
-
-Germany showed moderate decline (-14%)
-
-These preliminary visualizations suggest fundamentally different emission trajectories across countries, which the subsequent analysis will examine in greater depth through statistical comparisons and policy context.
-
-\newpage
-
-# Analysis
-## Question 1: What is the relationship between renewable energy adoption and CO₂ emissions across countries and over time?
-```{r}
-knitr::opts_chunk$set(echo = TRUE)
-
 
 
 
