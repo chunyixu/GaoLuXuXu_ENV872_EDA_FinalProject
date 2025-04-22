@@ -214,7 +214,7 @@ knitr::kable(Summary_Stats_PM, caption = "Summary Statistics for PM2.5 Pollution
 
 ```
 
-The exploratory analysis of CO₂ emissions, PM2.5 exposure, and renewable energy usage data involved initial visualizations of each indicator across four countries (United States, Germany, China, and Colombia) from 2010-2020. After preliminary graphs revealed scaling challenges due to wide variations between nations, the y-axis was adjusted to better display trends while preserving comparisons. Examining differences in each indicator's levels, trajectories, and volatility helped identify potential patterns worthy of deeper investigation in subsequent analysis. In this way, this section could examine how CO₂ emissions, PM2.5 exposure, and renewable energy usage have evolved from 2010 to 2020 in Germany, the United States, China, and Colombia. 
+The exploratory analysis of CO₂ emissions, renewable energy usage, and PM2.5 exposure data involved initial visualizations of each indicator across four countries (United States, Germany, China, and Colombia) from 2010-2020. After preliminary graphs revealed scaling challenges due to wide variations between nations, the y-axis was adjusted to better display trends while preserving comparisons. Examining differences in each indicator's levels, trajectories, and volatility helped identify potential patterns worthy of deeper investigation in subsequent analysis. In this way, this section could examine how CO₂ emissions, renewable energy usage, and PM2.5 exposure have evolved from 2010 to 2020 in Germany, the United States, China, and Colombia. 
 
 ```{r normalized.CO₂ Emissions.country, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -228,7 +228,7 @@ CO2_normalized_graph <- ggplot(CO2_normalized, aes(x = Year, y = Normalized, col
   scale_color_manual(values = c("CHN" = "red", "COL" = "darkgreen", 
                                 "DEU" = "turquoise", "USA" = "purple"),
                      labels = c("China", "Colombia", "Germany", "USA")) +
-  labs(title = "Normalized CO2 Emissions (2010 = 1.0)", 
+  labs(title = "Normalized CO₂ Emissions  (2010 = 1.0)", 
        y = "Relative to 2010 Levels") +
   theme_minimal() +
   theme(legend.position = "bottom")
@@ -237,11 +237,12 @@ print (CO2_normalized_graph)
 
 ```
 
-This normalized view highlights that while absolute emissions varied greatly:
--   The U.S. achieved the largest relative reduction (-21%)
--   China's emissions grew the most (+28%)
--   Colombia remained stable (±3%)
--   Germany showed moderate decline (-14%)
+Between 2010 and 2020, Germany and the United States exhibited a downward trend in CO₂ emissions, whereas China showed an upward trend. Colombia experienced an increase in emissions from 2010 to 2016, followed by a decline in the subsequent years.
+This normalized graph highlights that while absolute emissions varied greatly, throughout 2010 to 2020:
+-   The U.S. achieved the largest relative reduction (-25%)
+-   China's emissions grew the most (+22%)
+-   Colombia remained stable (+0.08%)
+-   Germany showed a moderate decline (-23%)
 
 
 ```{r normalized.Renewable Energy Consumption.country, echo=FALSE}
@@ -263,7 +264,12 @@ print (Renew_normalized_graph)
 
 
 ```
-
+From 2010 to 2020, China, Germany, and the United States all demonstrated a notable upward trend in renewable energy consumption, while Colombia exhibited a modest overall increase. 
+This normalized graph highlights that while absolute renewable energy consumption level varied greatly:
+-   Germany achieved the largest relative increase (+60%)
+-   The U.S. achieved an evident relative increase, too (+50%)
+-   China showed a moderate increase (+21%)
+-   Colombia remained stable (+0.06%)
 
 
 ```{r normalized.PM2.5 Pollution Exposure.country, echo=FALSE}
@@ -286,8 +292,13 @@ print (PM_normalized_graph)
 
 ```
 
+Between 2010 and 2020, all four countries exhibited a significant decline in PM2.5 pollution exposure, although China experienced an initial increase from 2010 to 2013.
+This normalized graph highlights that while absolute PM2.5 pollution exposure level varied greatly:
+-   Germany achieved the largest relative reduction (-27%)
+-   The U.S. achieved evident relative reduction, too (-17%)
+-   China and Colombia both showed a moderate reduction (-11% and -12%, respectively)
 
-These preliminary visualizations suggest fundamentally different emission trajectories across countries, which the subsequent analysis will examine in greater depth through statistical comparisons and policy context.
+These preliminary visualizations suggest fundamentally different CO₂ emissions, renewable energy usage, and PM2.5 exposure trajectories across countries, which the subsequent analysis will examine in greater depth through correlation tests, statistical comparisons, and policy context.
 
 
 
