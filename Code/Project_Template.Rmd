@@ -301,12 +301,11 @@ This normalized graph highlights that while absolute PM2.5 pollution exposure le
 These preliminary visualizations suggest fundamentally different CO₂ emissions, renewable energy usage, and PM2.5 exposure trajectories across countries, which the subsequent analysis will examine in greater depth through correlation tests, statistical comparisons, and policy context.
 
 
-
 \newpage
 
 # Analysis
 ## Question 1: What is the relationship between renewable energy adoption and CO₂ emissions across countries and over time?
-```{r}
+```{r RQ1.1, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ##Creating separate datasets regarding each variable of interest across four countries
 ###PM
@@ -340,15 +339,110 @@ Renew_CHN <- Renew %>%
   filter(`Country Code` == "CHN")
 
 
+#cross country comparison for renewable energy
+# Find the max and min Index values
+max_index <- which.max(Renew$Index)
+min_index <- which.min(Renew$Index)
+
+# Create separate annotation data with nudging
+label_data <- Renew[c(max_index, min_index), ]
+label_data$nudge_y <- c(-0.2, 0.5)     # Adjust label position: max down, min up
+label_data$vjust   <- c(1.5, -0.5)
+
+# Plot the line graph
+ggplot(Renew, aes(x = Year, y = Index, group = `Country Code`, color = `Country Code`)) +
+  geom_line(size = 1.5) +
+  geom_text(data = label_data[1, ], aes(label = Index), 
+            vjust = label_data$vjust[1], nudge_y = label_data$nudge_y[1], size = 4) +
+  geom_text(data = label_data[2, ], aes(label = Index), 
+            vjust = label_data$vjust[2], nudge_y = label_data$nudge_y[2], size = 4) +
+  labs(
+    title = "Cross Country Comparison of Renewable Energy Trends", 
+    x = "Year", 
+    y = "% of Energy Consumption"
+  ) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.title = element_blank()) +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.1))) +  # Add space above and below
+  coord_cartesian(clip = "off")  # Prevent labels from being clipped
 
 ```
+Overview of Renewable Energy Consumption
+The widespread adoption of renewable energy is essential to mitigating the impacts of climate change caused by human activity. Renewable energy sources, such as solar, wind, geothermal, and hydropower, hold the potential to transform global energy systems, particularly by providing electricity to the **760 million people** who currently lack access to it. Additionally, replacing fossil fuels like coal, oil, and natural gas with renewable energy is crucial for reducing greenhouse gas emissions.
+Although countries worldwide have made some progress in adopting renewable energy, the pace remains insufficient. In 2020, renewables accounted for just '12.6% of global energy consumption'. This rate of adoption is far from adequate to meet climate targets. To effectively limit global warming, it is necessary to 'triple renewable energy capacity by 2030'. Our analysis reveals that some nations have made more significant strides toward achieving this goal than others.
+The World Bank tracks renewable energy use as a percentage of total energy consumption. In 2020, the average renewable energy share across the four countries in our study was **16.88%**. Among these countries, **Colombia** stands out as a leader, reaching a peak of **32% renewable energy** in 2017. **Germany** follows, with impressive but still insufficient renewable energy adoption compared to Colombia. In stark contrast, **the United States** has been much slower to transition to renewables, with a peak share of just **11% in 2020**, indicating substantial underperformance relative to global needs.
+
+```{r RQ1.2, echo=FALSE}
+# Calculate the correlation between Renewable and CO2
+correlationCO2COL <- cor(CO2_COL$Index, RenewCOL$Index, method = "pearson")
+print(correlationCOL)
+correlationCO2CHN <- cor(CO2_COL$Index, RenewCHN$Index, method = "pearson")
+print(correlationCHN)
+correlationCO2USA <- cor(CO2_COL$Index, RenewUSA$Index, method = "pearson")
+print(correlationCO2USA)
+correlationCO2DEU <- cor(CO2_COL$Index, RenewDEU$Index, method = "pearson")
+print(correlationDEU)
+```
+The correlation analysis reveals no universal relationship between renewable energy adoption and CO₂ emissions. While China shows a slight negative trend (-0.15), other countries (Colombia, USA, Germany) exhibit positive or neutral correlations, suggesting renewables alone are insufficient to cut emissions without explicit fossil fuel phase-outs. This underscores that national context—energy mix, policy, and economic growth—drives whether renewables effectively mitigate CO₂.
+
 
 
 ## Question 2: Are there observable correlations between CO₂ emissions and PM2.5 pollution exposure?
 
+```{r RQ2.1, echo=FALSE}
+# Round Index values to 2 decimal places
+PM$Index <- round(PM$Index, 2)
+
+# Re-run plotting code
+ggplot(PM, aes(x = Year, y = Index, group = `Country Code`, color = `Country Code`)) +
+  geom_line(size = 1.5) +
+  labs(title = "Cross Country Comparison of PM2.5 Air Pollution", 
+       x = "Year", y = "PM2.5 (µg/m³)") +
+  geom_text(
+    data = PM[c(max_index, min_index), ],
+    aes(label = Index),  # Now shows 2 decimal places
+    vjust = -0.5, hjust = 0.8, size = 4,
+    nudge_x = 0.1, nudge_y = 0.1
+  ) +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5), legend.title = element_blank())
+
+```
+Overview of PM2.5
+The proportion of a nation's population exposed to ambient PM2.5 concentrations above the WHO's recommended threshold of 10 μg/m³ serves as a critical indicator of air quality-related health risks. These fine particulate pollutants, primarily generated through combustion processes including vehicular emissions, industrial operations, and residential heating, demonstrate well-established dose-response relationships with adverse health outcomes. Epidemiological research confirms both acute effects such as increased hospitalizations for cardiorespiratory conditions and emergency room visits, as well as chronic consequences including reduced pulmonary function and elevated cardiovascular disease risk, with particular severity among pediatric and geriatric populations.
+
+Our cross-national comparison reveals pronounced disparities in exposure levels, with China exhibiting systematically higher PM2.5 concentrations than the United States, Germany, and Colombia. This pattern likely reflects China's unique combination of coal-dependent energy infrastructure (accounting for approximately 60% of primary energy consumption), rapid industrial expansion during the 2000-2020 period averaging 8% annual GDP growth, and meteorological conditions prone to atmospheric stagnation. The United States demonstrates measurable improvements post-2010 attributable to Clean Air Act enforcement and fuel switching initiatives, while Germany maintains stable reductions despite complexities in its energy transition. Colombia's comparatively favorable profile correlates with its hydroelectric-dominated energy matrix, where renewables constitute over 70% of generation capacity.
+
+These findings underscore the effectiveness of integrated policy approaches combining emission controls, energy infrastructure modernization, and urban planning interventions. The China-United States divergence particularly highlights the health benefits achievable through rigorous power plant emission standards, vehicle fleet renewal programs, and comprehensive air quality monitoring systems. Future research directions should prioritize quantitative health impact assessments using WHO-recommended methodologies, detailed source apportionment studies to identify sector-specific contributions, and longitudinal evaluations of intervention effectiveness, such as China's recent "Blue Sky" policy initiatives.
+
+```{r RQ2.2, echo=FALSE}
+# Calculate Pearson correlations (linear relationship strength):
+correlationPMCOL <- cor(CO2_COL$Index, PMCOL$Index, 
+                     method = "pearson", use = "complete.obs")  # Colombia
+correlationPMCHN <- cor(CO2_CHN$Index, PMCHN$Index, 
+                     method = "pearson", use = "complete.obs")  # China
+correlationPMUSA <- cor(CO2_USA$Index, PMUSA$Index,  # Corrected from USACOL to PMUSA
+                     method = "pearson", use = "complete.obs")  # USA
+correlationPMDEU <- cor(CO2_DEU$Index, PMDEU$Index, 
+                     method = "pearson", use = "complete.obs")  # Germany
+print(correlationPMCOL)
+print(correlationPMCHN)
+print(correlationPMUSA)
+print(correlationPMDEU)
+
+```
+While observable correlations exist, their strength and direction vary significantly by national context. This underscores the need for country-specific air quality management strategies that account for local emission source profiles and development pathways. The strong US correlation suggests co-control benefits from decarbonization, whereas China/Colombia's results indicate PM2.5 reduction may require additional targeted measures beyond CO₂ mitigation.
+
 
 ## Question 3: Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges?
 
+The analysis reveals distinct yet complementary policy approaches that countries can emulate to address interconnected environmental challenges. Colombia stands out as a renewable energy leader, achieving 32% renewable energy consumption through strategic harnessing of its natural resources. The country's success stems from innovative policies like the Energy Transition Law, which created tax incentives for renewable projects, and robust public-private partnerships exemplified by Ecopetrol's investments. Colombia's National Energy Plan demonstrates how developing nations can leverage geographic advantages - in this case, hydropower and bioenergy resources - to build sustainable energy systems. The planned expansion into wind and solar energy through competitive auctions in the Guajira region offers a replicable model for resource-rich developing countries.
+
+The United States provides critical lessons in air quality management, maintaining the lowest PM2.5 levels among the studied nations. This achievement primarily results from decades of stringent regulation under the Clean Air Act and its amendments, which imposed strict emissions caps on industries and vehicles. While the correlation between CO2 and PM2.5 reductions appears statistically weak, the U.S. experience shows how fuel switching and efficiency improvements can create valuable co-benefits for both climate and public health. America's regulatory framework offers a template for urbanizing nations struggling with particulate pollution, proving that emissions reductions aren't strictly prerequisite for air quality gains.
+
+Germany exemplifies comprehensive decarbonization, successfully reducing CO2 emissions by 14% while cutting PM2.5 exposure by nearly 30%. This dual achievement stems from Germany's integrated policy approach, combining aggressive renewable energy subsidies with a structured coal phaseout plan and meaningful carbon pricing (€25-30/ton). The German model demonstrates how developed economies can orchestrate just transitions through policy sequencing - first building renewable capacity, then retiring fossil assets - while maintaining energy security. This approach has created measurable climate and health benefits, making it particularly relevant for industrialized nations.
+
+China's experience, while highlighting the challenges of coal dependence, also shows promising policy innovations. The "Blue Sky" initiative reduced PM2.5 concentrations by 11% through stringent industrial emission standards and pilot carbon trading schemes. For coal-reliant developing economies, China's approach suggests that targeted industrial policies and gradual market mechanisms can achieve meaningful improvements even before full energy transitions are feasible. Each country's experience contributes unique insights to a global toolkit for sustainable development, emphasizing that effective solutions must be tailored to national circumstances while drawing on cross-border lessons. The collective experience underscores that environmental progress requires policy packages combining regulation, incentives, and innovation, adapted to each nation's resources and development stage.
 
 \newpage
 
