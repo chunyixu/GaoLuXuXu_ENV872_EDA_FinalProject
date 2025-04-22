@@ -87,31 +87,33 @@ We selected data from the World Bank’s World Development Indicators, which off
 
 To guide our analysis, we propose the following research questions: 
 
-How have CO₂ emissions, PM2.5 exposure, and renewable energy usage evolved from 2010 to 2020 in Germany, the United States, China, and Colombia? 
+1) What is the relationship between renewable energy adoption and CO₂ emissions across countries and over time? 
 
-What is the relationship between renewable energy adoption and CO₂ emissions across countries and over time? 
+2) Are there observable correlations between CO₂ emissions and PM2.5 pollution exposure? 
 
-Are there observable correlations between CO₂ emissions and PM2.5 pollution exposure? 
-
-Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges? 
+3) Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges? 
 
 
 \newpage
 
 # Dataset Information
-This analysis investigates the relationship between CO₂ emissions and three environmental and public health variables—renewable energy consumption, PM2.5 air pollution, and access to clean cooking fuels—across two developed countries (Germany and the United States) and two developing countries (China and Colombia). The goal is to understand whether higher renewable energy adoption, cleaner air, and improved access to clean fuels are associated with lower carbon emissions in these national contexts from 2010 to 2020. 
-
 The data for this project were collected from the World Bank Databank, specifically from the World Development Indicators (WDI) dataset. These indicators are sourced from officially recognized international organizations and represent some of the most comprehensive and reliable global development data available. The WDI aggregates national, regional, and global statistics on topics related to environmental sustainability, public health, and economic growth. 
 
-The final dataset includes annual values for the following four countries: United States, Germany, China, and Colombia, covering four key variables: (1) CO₂ Emissions (metric tons per capita), (2) Renewable Energy Consumption (% of total final energy consumption), (3) PM2.5 Pollution Exposure (mean annual exposure in µg/m³), and (4) Access to Clean Cooking Fuels (% of total population). 
+The final dataset includes annual values for the following four countries: United States, Germany, China, and Colombia, covering four key variables: (1) CO₂ Emissions (metric tons per capita), (2) Renewable Energy Consumption (% of total final energy consumption), and (3) PM2.5 Pollution Exposure (mean annual exposure in µg/m³). 
 
 These indicators were selected for their direct relevance to SDG 3 (Good Health and Well-being), SDG 7 (Affordable and Clean Energy), and SDG 13 (Climate Action). Together, these variables form the foundation for analyzing how environmental and energy infrastructure development correlate with greenhouse gas emissions. 
 
+By leveraging this dataset, this project can investigate the relationship between CO₂ emissions and two environmental and public health variables—renewable energy consumption, and PM2.5 air pollution across two developed countries (Germany and the United States) and two developing countries (China and Colombia). The goal is to understand whether higher renewable energy adoption, cleaner air, and improved access to clean fuels are associated with lower carbon emissions in these national contexts from 2010 to 2020. 
 
 \newpage
+# Dataset Wrangling
+Data preparation was carried out using the R programming language, with heavy use of the tidyverse, dplyr, and readxl packages. The data wrangling process involved importing the original World Bank Excel dataset for each of the three variables of four countries using readxl::read_excel(). Unnecessary rows were removed, and missing values were replaced with "N/A" using the na.omit() function and the na_if() function. Then, the year column was converted to a character variable to facilitate data analysis. The dataset was then reshaped to a single panel structure by consolidating year columns into a single "Year" column, reorganizing the corresponding values into a "Value" column, and maintaining key identifiers like "Country Code," "Country Name," and "Series Name" via the pivot_longer () function. Subsequently, the "Value" column was converted to a numeric variable to ensure it is a format suitable for analysis. Finally, the processed dataset was saved as an Excel file in the Processed_Data folder using the write_xlsx() function. In this way, the final dataset was reshaped into a tidy format (long or wide as needed) for visualization and statistical analysis. 
+
 
 # Exploratory Analysis 
 The exploratory analysis of CO₂ emissions data involved initial visualizations of per capita emissions across four countries (United States, Germany, China, and Colombia) from 2010-2020. After preliminary graphs revealed scaling challenges due to wide variations between nations, the y-axis was adjusted to better display trends while preserving comparisons. Examining differences in emission levels, trajectories, and volatility helped identify potential patterns worthy of deeper investigation in subsequent analysis.
+
+How have CO₂ emissions, PM2.5 exposure, and renewable energy usage evolved from 2010 to 2020 in Germany, the United States, China, and Colombia? 
 
 ```{r setup, include=FALSE}
 ##Creating separate datasets for four variables of interest
