@@ -42,6 +42,8 @@ Sus_Env <- read_excel("/Users/xuchunyi/Desktop/GaoLuXuXu_ENV872_EDA_FinalProject
 
 #Viewing the structure of the dataset
 dim (Sus_Env)
+view(Sus_Env)
+colnames(Sus_Env)
 
 # Data Wrangling
 ##Removing unnecessary rows and replacing missing values with N/A
@@ -53,11 +55,13 @@ Sus_Env_Step1 <- Sus_Env %>%
 Sus_Env_Step1 <- Sus_Env_Step1 %>%
   mutate(across(4:ncol(Sus_Env_Step1), as.character))
 
-##Reorganizing the dataset
+##Reorganizing the dataset and filtering Series Name to keep variables of interest (PM, CO2, and Renew)
 Sus_Env_Processed <- Sus_Env_Step1 %>%
   pivot_longer(cols = -c("Country Code", "Country Name", "Series Name"), 
                names_to = "Year",      
-               values_to = "Value")  
+               values_to = "Value") %>%
+  filter(`Series Name` %in% c("PM", "CO2", "Renew"))
+
 
 ##Checking the class of the variable Value, and the result is character
 class (Sus_Env_Processed$Value)
