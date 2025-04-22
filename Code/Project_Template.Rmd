@@ -366,12 +366,14 @@ ggplot(Renew, aes(x = Year, y = Value, group = `Country Code`, color = `Country 
   scale_y_continuous(expand = expansion(mult = c(0.1, 0.1))) +  # Add space above and below
   coord_cartesian(clip = "off")  # Prevent labels from being clipped
 
+
 ```
 Overview of Renewable Energy Consumption
 The widespread adoption of renewable energy is essential to mitigating the impacts of climate change caused by human activity. Renewable energy sources, such as solar, wind, geothermal, and hydropower, hold the potential to transform global energy systems, particularly by providing electricity to the **760 million people** who currently lack access to it. Additionally, replacing fossil fuels like coal, oil, and natural gas with renewable energy is crucial for reducing greenhouse gas emissions.
 Although countries worldwide have made some progress in adopting renewable energy, the pace remains insufficient. In 2020, renewables accounted for just '12.6% of global energy consumption'. This rate of adoption is far from adequate to meet climate targets. To effectively limit global warming, it is necessary to 'triple renewable energy capacity by 2030'. Our analysis reveals that some nations have made more significant strides toward achieving this goal than others.
 The World Bank tracks renewable energy use as a percentage of total energy consumption. In 2020, the average renewable energy share across the four countries in our study was **16.88%**. Among these countries, **Colombia** stands out as a leader, reaching a peak of **32% renewable energy** in 2017. **Germany** follows, with impressive but still insufficient renewable energy adoption compared to Colombia. In stark contrast, **the United States** has been much slower to transition to renewables, with a peak share of just **11% in 2020**, indicating substantial underperformance relative to global needs.
 
+The Correlation Analysis
 ```{r RQ1.2, echo=FALSE}
 # Calculate the correlation between Renewable and CO2
 correlationCO2COL <- cor(CO2_COL$Value, Renew_COL$Value, method = "pearson")
@@ -385,6 +387,42 @@ print(correlationCO2DEU)
 ```
 The correlation analysis reveals no universal relationship between renewable energy adoption and CO₂ emissions. While China shows a slight negative trend (-0.15), other countries (Colombia, USA, Germany) exhibit positive or neutral correlations, suggesting renewables alone are insufficient to cut emissions without explicit fossil fuel phase-outs. This underscores that national context—energy mix, policy, and economic growth—drives whether renewables effectively mitigate CO₂.
 
+The Linear Regression Analysis
+```{r RQ1.3, echo=FALSE}
+# Linear regression for each country: CO2 as a function of Renewables
+model_COL_Q1 <- lm(CO2_COL$Index ~ Renew_COL$Index)
+model_CHN_Q1 <- lm(CO2_CHN$Index ~ Renew_CHN$Index)
+model_USA_Q1 <- lm(CO2_USA$Index ~ Renew_USA$Index)
+model_DEU_Q1 <- lm(CO2_DEU$Index ~ Renew_DEU$Index)
+
+# Summary to get p-values and R²
+summary(model_COL_Q1)
+summary(model_CHN_Q1)
+summary(model_USA_Q1)
+summary(model_DEU_Q1)
+
+```
+The linear regression results suggest varying impacts of renewable energy adoption on CO₂ emissions across countries. In the United States and Germany, there is a strong and statistically significant negative relationship between the renewable energy index and CO₂ emissions, indicating that increased renewable energy usage has contributed meaningfully to emissions reductions. Specifically, renewable energy explains over 90% of the variation in CO₂ emissions in the U.S. and 87% in Germany, highlighting effective decarbonization strategies. In contrast, China's regression shows a significant but positive relationship, implying that despite expanding renewables, CO₂ emissions have continued to rise, likely due to sustained industrial growth and fossil fuel reliance. For Colombia, the relationship is positive but not statistically significant, suggesting that renewables may not yet play a major role in reducing emissions, possibly due to their smaller share in the energy mix or concurrent growth in energy demand. These findings underscore the importance of national context in shaping the emissions impact of renewable energy development.
+
+Scatterplot with Regression Line
+```{r RQ2.2, echo=FALSE}
+# Merge CO2 and Renewable data for each country
+merged_data <- merge(CO2, Renew, by = c("Country Code", "Year"), suffixes = c("_CO2", "_Renew"))
+
+# Scatterplot with regression line
+ggplot(merged_data, aes(x = Index_Renew, y = Index_CO2, color = `Country Code`)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +  # Add regression line
+  labs(
+    title = "Renewable Energy Adoption vs. CO₂ Emissions (2000-2020)",
+    x = "Renewable Energy (% of Total Consumption)",
+    y = "CO₂ Emissions (Metric Tons per Capita)",
+    color = "Country"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+Based on the graph showing renewable energy adoption versus CO₂ emissions across the USA, Germany, China, and Colombia from 2000-2020, there's a generally negative correlation between the percentage of renewable energy and carbon emissions per capita. Countries with higher renewable energy adoption tend to have lower per capita CO₂ emissions, as demonstrated by Colombia having the highest renewable percentage (28-30%) and lowest emissions (about 2 metric tons per capita), while the USA shows the opposite pattern with low renewable adoption (8-12%) and high emissions (15-18 metric tons). The downward trend lines for individual countries (particularly visible for the USA and Germany) further suggest that as nations increase their renewable energy share over time, their emissions decrease accordingly, though other factors like overall energy consumption, economic development stage, and industrial activity also influence emission levels, as evidenced by China's somewhat different pattern.
 
 
 ## Question 2: Are there observable correlations between CO₂ emissions and PM2.5 pollution exposure?
@@ -392,6 +430,9 @@ The correlation analysis reveals no universal relationship between renewable ene
 ```{r RQ2.1, echo=FALSE}
 # Round Value values to 2 decimal places
 PM$Value <- round(PM$Value, 2)
+
+max_index <- which.max(PM$Index)
+min_index <- which.min(PM$Index)
 
 # Re-run plotting code
 ggplot(PM, aes(x = Year, y = Value, group = `Country Code`, color = `Country Code`)) +
@@ -432,6 +473,73 @@ print(correlationPMDEU)
 
 ```
 While observable correlations exist, their strength and direction vary significantly by national context. This underscores the need for country-specific air quality management strategies that account for local emission source profiles and development pathways. The strong US correlation suggests co-control benefits from decarbonization, whereas China/Colombia's results indicate PM2.5 reduction may require additional targeted measures beyond CO₂ mitigation.
+
+*Linear Regression Analysis
+```{r RQ2.3, echo=FALSE}
+# Linear regression for each country: PM2.5 as a function of CO2 emissions
+model_COL_Q2 <- lm(PM_COL$Value ~ CO2_COL$Value)
+model_CHN_Q2 <- lm(PM_CHN$Value ~ CO2_CHN$Value)
+model_USA_Q2 <- lm(PM_USA$Value ~ CO2_USA$Value)
+model_DEU_Q2 <- lm(PM_DEU$Value ~ CO2_DEU$Value)
+
+# Summary to get p-values and R²
+summary(model_COL_Q2)
+summary(model_CHN_Q2)
+summary(model_USA_Q2)
+summary(model_DEU_Q2)
+
+# Create a summary table for PM2.5 ~ CO2 regressions
+summary_table_Q2 <- data.frame(
+  Country = c("Colombia", "China", "USA", "Germany"),
+  Coefficient = c(coef(model_COL_Q2)[2], coef(model_CHN_Q2)[2], coef(model_USA_Q2)[2], coef(model_DEU_Q2)[2]),
+  p_value = c(summary(model_COL_Q2)$coefficients[2,4],
+              summary(model_CHN_Q2)$coefficients[2,4],
+              summary(model_USA_Q2)$coefficients[2,4],
+              summary(model_DEU_Q2)$coefficients[2,4]),
+  R_squared = c(summary(model_COL_Q2)$r.squared,
+                summary(model_CHN_Q2)$r.squared,
+                summary(model_USA_Q2)$r.squared,
+                summary(model_DEU_Q2)$r.squared)
+)
+
+# Add direction and significance flags
+summary_table_Q2$Direction <- ifelse(summary_table_Q2$Coefficient > 0, "↑", "↓")
+summary_table_Q2$Significant <- ifelse(summary_table_Q2$p_value < 0.05, "Yes", "No")
+
+# Round values for cleaner display
+summary_table_Q2$Coefficient <- round(summary_table_Q2$Coefficient, 3)
+summary_table_Q2$p_value <- signif(summary_table_Q2$p_value, 3)
+summary_table_Q2$R_squared <- round(summary_table_Q2$R_squared, 2)
+
+# Reorder and print
+summary_table_Q2 <- summary_table_Q2[, c("Country", "Coefficient", "Direction", "p_value", "Significant", "R_squared")]
+print(summary_table_Q2)
+```
+The second set of linear regression models investigates the relationship between PM2.5 concentrations and CO2 emissions in each country. The USA and Germany show statistically significant results, but in opposite directions. For the USA, the coefficient is positive and highly significant (p = 0.0004), indicating that higher CO2 emissions are associated with increased PM2.5 levels. In contrast, Germany exhibits a significant negative relationship (p = 0.048), suggesting that higher CO2 emissions are associated with lower PM2.5 concentrations, which might reflect the influence of decarbonization technologies or cleaner combustion. However, the results for Colombia and China are not statistically significant, with p-values above 0.3 and very low R-squared values, implying little explanatory power of CO2 emissions on PM2.5 in these contexts. Overall, the findings underscore heterogeneous national dynamics, possibly driven by differing energy sources, pollution control technologies, and industrial policies.
+
+*Scatterplot with Regression Line
+```{r RQ2.2, echo=FALSE}
+# Merge CO2 and PM2.5 data
+merged_pm_data <- merge(CO2, PM, by = c("Country Code", "Year"), suffixes = c("_CO2", "_PM"))
+
+# Scatterplot
+ggplot(merged_pm_data, aes(x = Index_CO2, y = Index_PM, color = `Country Code`)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
+  labs(
+    title = "CO₂ Emissions vs. PM2.5 Pollution Exposure (2000-2020)",
+    x = "CO₂ Emissions (Metric Tons per Capita)",
+    y = "PM2.5 Concentration (µg/m³)",
+    color = "Country"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+Looking at the scatter plot of CO₂ emissions versus PM2.5 pollution exposure from 2000-2020 across China, Colombia, Germany, and the USA reveals complex relationships between these environmental indicators. While the overall cross-country comparison shows a counterintuitive pattern—with higher-emission countries like the USA having lower PM2.5 levels than lower-emission countries like China and Colombia—there are notable within-country correlations for developed economies. As observed in the data points for Germany and the USA, there appears to be a positive correlation where years with higher carbon emissions tend to correspond with higher particulate pollution levels. This suggests that while economic development stage and environmental regulation may disconnect these measures globally, within similar economic systems, both types of emissions may share common drivers or respond to similar policy interventions. The USA exhibits the clearest positive correlation, with PM2.5 concentrations increasing alongside rising per capita CO₂ emissions, indicating that domestic pollution control efforts need to address both greenhouse gases and particulate matter simultaneously. This nuanced relationship highlights the importance of considering both global patterns and country-specific trends when developing environmental policies.
+
+
 
 
 ## Question 3: Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges?
