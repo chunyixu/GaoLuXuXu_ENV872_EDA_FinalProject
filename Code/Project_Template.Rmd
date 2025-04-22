@@ -345,7 +345,7 @@ max_value_Renew <- which.max(Renew$Value)
 min_value_Renew <- which.min(Renew$Value)
 
 # Create separate annotation data with nudging
-label_data <- Renew[c(max_value, min_value), ]
+label_data <- Renew[c(max_value_Renew, min_value_Renew), ]
 label_data$nudge_y <- c(-0.2, 0.5)     # Adjust label position: max down, min up
 label_data$vjust   <- c(1.5, -0.5)
 
@@ -390,10 +390,10 @@ The correlation analysis reveals no universal relationship between renewable ene
 The Linear Regression Analysis
 ```{r RQ1.3, echo=FALSE}
 # Linear regression for each country: CO2 as a function of Renewables
-model_COL_Q1 <- lm(CO2_COL$Index ~ Renew_COL$Index)
-model_CHN_Q1 <- lm(CO2_CHN$Index ~ Renew_CHN$Index)
-model_USA_Q1 <- lm(CO2_USA$Index ~ Renew_USA$Index)
-model_DEU_Q1 <- lm(CO2_DEU$Index ~ Renew_DEU$Index)
+model_COL_Q1 <- lm(CO2_COL$Value ~ Renew_COL$Value)
+model_CHN_Q1 <- lm(CO2_CHN$Value ~ Renew_CHN$Value)
+model_USA_Q1 <- lm(CO2_USA$Value ~ Renew_USA$Value)
+model_DEU_Q1 <- lm(CO2_DEU$Value ~ Renew_DEU$Value)
 
 # Summary to get p-values and R²
 summary(model_COL_Q1)
@@ -410,7 +410,7 @@ Scatterplot with Regression Line
 merged_data <- merge(CO2, Renew, by = c("Country Code", "Year"), suffixes = c("_CO2", "_Renew"))
 
 # Scatterplot with regression line
-ggplot(merged_data, aes(x = Index_Renew, y = Index_CO2, color = `Country Code`)) +
+ggplot(merged_data, aes(x = Value_Renew, y = Value_CO2, color = `Country Code`)) +
   geom_point(size = 3, alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +  # Add regression line
   labs(
@@ -431,8 +431,8 @@ Based on the graph showing renewable energy adoption versus CO₂ emissions acro
 # Round Value values to 2 decimal places
 PM$Value <- round(PM$Value, 2)
 
-max_index <- which.max(PM$Index)
-min_index <- which.min(PM$Index)
+max_index <- which.max(PM$Value)
+min_index <- which.min(PM$Value)
 
 # Re-run plotting code
 ggplot(PM, aes(x = Year, y = Value, group = `Country Code`, color = `Country Code`)) +
@@ -523,7 +523,7 @@ The second set of linear regression models investigates the relationship between
 merged_pm_data <- merge(CO2, PM, by = c("Country Code", "Year"), suffixes = c("_CO2", "_PM"))
 
 # Scatterplot
-ggplot(merged_pm_data, aes(x = Index_CO2, y = Index_PM, color = `Country Code`)) +
+ggplot(merged_pm_data, aes(x = Value_CO2, y = Value_PM, color = `Country Code`)) +
   geom_point(size = 3, alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
   labs(
