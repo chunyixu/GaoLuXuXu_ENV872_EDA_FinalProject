@@ -14,7 +14,7 @@ toc: true
 \listoffigures 
 \newpage
 
-```{r setup, include=FALSE}
+```{r project.setup, message=FALSE, warning=FALSE, error=FALSE, results='hide'}
 knitr::opts_chunk$set(echo = TRUE)
 # Set your working directory
 library (here)
@@ -129,17 +129,10 @@ Data preparation was carried out using the R programming language, with heavy us
 
 
 # Exploratory Analysis 
-The summary statistics for three indicators from 2010 to 2020 across four countries are demonstrated below as part of the data exploration. 
-```{r setup, include=FALSE}
-##Creating separate datasets for four variables of interest
-PM <- Sus_Env_Processed %>% 
-  filter(`Series Name` == "PM")
-CO2 <- Sus_Env_Processed %>% 
-  filter(`Series Name` == "CO2")
-Renew <- Sus_Env_Processed %>% 
-  filter(`Series Name` == "Renew")
-
-summary_stats <- Sus_Env_Processed %>%
+The following summary statistic table provides an overview of the three indicators from 2010 to 2020, as part of our data exploration.
+```{r indicator.summary, echo=FALSE}
+#Computing the mean, maximum value, minimum value, standard deviation, and the range for each indicator
+Summary_Stats_Indicator <- Sus_Env_Processed %>%
   group_by(`Series Name`) %>%
   summarize(
     n_obs = n(),  
@@ -150,10 +143,74 @@ summary_stats <- Sus_Env_Processed %>%
     range = max(Value, na.rm = TRUE) - min(Value, na.rm = TRUE) 
   )
 
-knitr::kable(summary_stats, caption = "Summary Statistics for CO2, PM, and Renew", col.names = c("Series Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
+
+#Use the `kable` function to produce the summary statistic table in markdown format
+#Producing the table for the summary statistic for three indicators
+knitr::kable(Summary_Stats_Indicator, caption = "Summary Statistics for CO2, PM, and Renew", col.names = c("Series Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
+
+```
+
+The following three summary statistic tables provide an overview of the three indicators for each country from 2010 to 2020, as part of our data exploration.
+```{r indicator.summary.country, echo=FALSE}
+##Creating separate datasets for three variables of interest
+CO2 <- Sus_Env_Processed %>% 
+  filter(`Series Name` == "CO2")
+Renew <- Sus_Env_Processed %>% 
+  filter(`Series Name` == "Renew")
+PM <- Sus_Env_Processed %>% 
+  filter(`Series Name` == "PM")
+
+#CO2 Emissions
+##Computing the mean, maximum value, minimum value, standard deviation, and the range for CO2 in each country
+Summary_Stats_CO2 <- CO2 %>%
+  group_by(`Country Name`) %>%
+  summarize(
+    n_obs = n(),  
+    mean = mean(Value, na.rm = TRUE),  
+    max = max(Value, na.rm = TRUE),    
+    min = min(Value, na.rm = TRUE),    
+    sd = sd(Value, na.rm = TRUE),     
+    range = max(Value, na.rm = TRUE) - min(Value, na.rm = TRUE) 
+  )
+
+##Use the `kable` function to produce the summary statistic table in markdown format
+##Producing the table for the summary statistic for PM2.5 in each country
+knitr::kable(Summary_Stats_CO2, caption = "Summary Statistics for CO₂ Emissions (metric tons per capita)", col.names = c("Country Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
+
+#Renewable Energy Consumption
+##Computing the mean, maximum value, minimum value, standard deviation, and the range for renewable energy consumption in each country
+Summary_Stats_Renew <- Renew %>%
+  group_by(`Country Name`) %>%
+  summarize(
+    n_obs = n(),  
+    mean = mean(Value, na.rm = TRUE),  
+    max = max(Value, na.rm = TRUE),    
+    min = min(Value, na.rm = TRUE),    
+    sd = sd(Value, na.rm = TRUE),     
+    range = max(Value, na.rm = TRUE) - min(Value, na.rm = TRUE) 
+  )
+
+##Use the `kable` function to produce the summary statistic table in markdown format
+##Producing the table for the summary statistic for renewable energy consumption in each country
+knitr::kable(Summary_Stats_PM, caption = "Summary Statistics for Renewable Energy Consumption (% of total final energy consumption)", col.names = c("Country Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
 
 
+#PM2.5 Pollution Exposure
+##Computing the mean, maximum value, minimum value, standard deviation, and the range for PM2.5 in each country
+Summary_Stats_PM <- PM %>%
+  group_by(`Country Name`) %>%
+  summarize(
+    n_obs = n(),  
+    mean = mean(Value, na.rm = TRUE),  
+    max = max(Value, na.rm = TRUE),    
+    min = min(Value, na.rm = TRUE),    
+    sd = sd(Value, na.rm = TRUE),     
+    range = max(Value, na.rm = TRUE) - min(Value, na.rm = TRUE) 
+  )
 
+##Use the `kable` function to produce the summary statistic table in markdown format
+##Producing the table for the summary statistic for PM2.5 in each country
+knitr::kable(Summary_Stats_PM, caption = "Summary Statistics for PM2.5 Pollution Exposure (mean annual exposure in µg/m³)", col.names = c("Country Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
 
 ```
 
