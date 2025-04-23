@@ -1,0 +1,856 @@
+---
+title: 'Interconnected Environmental Challenges: CO2 Emissions, Renewable Energy, and Air Pollution in the Context of UN Sustainability Goals'
+author: "Jessie Gao, Lu Liu, Chunyi Xu, and Lauren Xu" 
+date: "Spring 2025"
+output: pdf_document
+---
+
+\newpage
+\tableofcontents 
+\newpage
+\listoftables 
+\newpage
+\listoffigures 
+\newpage
+
+```{r project.setup, error=FALSE, message=FALSE, warning=FALSE, include=FALSE, results='hide'}
+knitr::opts_chunk$set(echo = TRUE)
+# Set your working directory
+library (here)
+##Checking working directory is the project folder
+here()
+
+# Load your packages
+library(readxl)
+library (ggplot2)
+library(tidyverse)
+library (lubridate)
+library(dplyr)
+library(writexl)
+
+
+# Set your ggplot theme
+my.default.theme <- theme_classic(base_size = 15) +
+  theme(plot.background = element_rect(color='white',fill='white'),
+        plot.title = element_text(color='black', size = 15),
+        axis.text = element_text(color = 'black',size = 10), 
+        panel.grid.minor = element_line(size = 0.5),
+        panel.grid.major = element_line(size = 0.5),
+        legend.background = element_rect(color='white', fill = 'white'),
+        legend.position = "right",
+        legend.title = element_text(color='black',size=10),
+        legend.text = element_text(size = 10))
+
+#Setting the theme as the default theme
+theme_set(my.default.theme)
+
+# Load your datasets
+Sus_Env <- read_excel("/home/guest/EDE_Spring2025/Team Project/ENV872_EDA_FinalProject/Sus_Env.xlsx")
+
+#Viewing the structure of the dataset
+dim (Sus_Env)
+view(Sus_Env)
+colnames(Sus_Env)
+
+# Data Wrangling
+##Removing unnecessary rows and replacing missing values with N/A
+Sus_Env_Step1 <- Sus_Env %>% 
+  na.omit() %>%
+  mutate(`2020` = na_if(`2020`, '..'))  
+
+##Changing the year column to character
+Sus_Env_Step1 <- Sus_Env_Step1 %>%
+  mutate(across(4:ncol(Sus_Env_Step1), as.character))
+
+##Reorganizing the dataset and filtering Series Name to keep variables of interest (PM, CO2, and Renew)
+Sus_Env_Processed <- Sus_Env_Step1 %>%
+  pivot_longer(cols = -c("Country Code", "Country Name", "Series Name"), 
+               names_to = "Year",      
+               values_to = "Value") %>%
+  filter(`Series Name` %in% c("PM", "CO2", "Renew"))
+
+
+##Checking the class of the variable Value, and the result is character
+class (Sus_Env_Processed$Value)
+
+##Converting the Value to a numeric variable
+Sus_Env_Processed <- Sus_Env_Processed %>%
+  mutate(Value = as.numeric(Value))
+
+##Checking the class of the variable Value, and the result is numeric
+class (Sus_Env_Processed$Value)
+
+#Saving the processed dataset
+output_file <- "/home/guest/EDE_Spring2025/Team Project/ENV872_EDA_FinalProject/Sus_Env_Processed.xlsx"
+write_xlsx(Sus_Env_Processed, path = output_file)
+
+```
+
+
+# Rationale and Research Questions
+The global climate crisis has intensified over the past decade, with rising temperatures, air pollution, and energy insecurity threatening the health and stability of communities worldwide. Carbon dioxide (CO2) emissions from fossil fuel combustion are a primary driver of climate change, while exposure to fine particulate matter (PM2.5) has been strongly linked to adverse health outcomes such as respiratory and cardiovascular disease. Meanwhile, the transition to renewable energy represents a critical pathway for reducing both greenhouse gas emissions and harmful air pollutants. Given the importance of environmental indicators in evaluating national progress toward sustainability, this study aims to explore the interplay between CO2 emissions, PM2.5 pollution, and renewable energy adoption in the context of global development goals. 
+
+We selected data from the World Bank’s World Development Indicators, which offer a reliable, standardized, and accessible source for cross-country comparisons. The four countries in our study, which are Germany, the United States, China, and Colombia, were chosen to provide a balanced perspective between developed and developing economies. These nations vary significantly in their energy structures, industrial activities, environmental policies, and climate vulnerabilities. The three metrics— CO2 emissions per capita, PM2.5 air pollution exposure, and renewable energy share in total consumption— were selected due to their relevance to key UN Sustainable Development Goals (SDGs 3, 7, and 13) and their interconnected impacts on environmental and human health. 
+
+To guide our analysis, we propose the following research questions: 
+
+1) What is the relationship between renewable energy adoption and CO2 emissions across countries and over time? 
+
+2) Are there observable correlations between CO2 emissions and PM2.5 pollution exposure? 
+
+3) Which factor better predicts changes in CO2 emissions: renewable energy consumption, exposure to PM2.5 pollution, or a combination of both?
+
+4) Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges? 
+
+
+\newpage
+
+# Dataset Information
+The data for this project were collected from the World Bank Databank, specifically from the World Development Indicators (WDI) dataset. These indicators are sourced from officially recognized international organizations and represent some of the most comprehensive and reliable global development data available. The WDI aggregates national, regional, and global statistics on topics related to environmental sustainability, public health, and economic growth. 
+
+The final dataset includes annual values for the following four countries: United States, Germany, China, and Colombia, covering four key indicators: (1) CO2 Emissions (metric tons per capita), (2) Renewable Energy Consumption (% of total final energy consumption), and (3) PM2.5 Pollution Exposure (mean annual exposure in micrograms per cubic meter). 
+
+These indicators were selected for their direct relevance to SDG 3 (Good Health and Well-being), SDG 7 (Affordable and Clean Energy), and SDG 13 (Climate Action). Together, these variables form the foundation for analyzing how environmental and energy infrastructure development correlate with greenhouse gas emissions. 
+
+By leveraging this dataset, this project can investigate the relationship between CO2 emissions and two environmental and public health variables—renewable energy consumption, and PM2.5 air pollution across two developed countries (Germany and the United States) and two developing countries (China and Colombia). The goal is to understand whether higher renewable energy adoption, cleaner air, and improved access to clean fuels are associated with lower carbon emissions in these national contexts from 2010 to 2020. 
+
+Table: Dataset Structure Summary_1
+
+Variable  | Description
+------------: | :-------------
+Country Name  | Name of the Country
+Country Code  | Three-letter Country Code
+Series Name  | Indicator Name
+Year (2010-2020)  | Values for the respective indicator for each year
+
+
+\newpage
+# Dataset Wrangling
+Data preparation was carried out using the R programming language, with heavy use of the tidyverse, dplyr, and readxl packages. We removed incomplete rows and standardized missing values (e.g., '..') using na.omit() and na_if(). 
+
+The dataset was then reshaped from wide to long format using pivot_longer(), with Year and Value columns created for time-series analysis. Only three indicators—CO$_2$ emissions, renewable energy consumption, and PM2.5 exposure—were retained via filtering.
+
+As part of data cleaning, we confirmed that all numerical values were stored in appropriate formats. The Value column, initially read as a character type, was explicitly converted to numeric using as.numeric() to allow for statistical analysis.
+
+Finally, the cleaned and reshaped dataset was saved as a separate .xlsx file using the write_xlsx() function for reproducibility and further use in exploratory data analysis, correlation testing, and regression modeling.
+
+
+Table: Dataset Structure Summary_2
+
+| Variable                          | Unit                          | Range           | Mean | Source               |
+|----------------------------------|-------------------------------|------------------|--------------------------|----------------------|
+| CO$_2$ Emissions                    | Metric tons per capita        | 1.4 – 17.4      | 8.3        | World Bank (WDI)     |
+| Renewable Energy Consumption     | % of total energy use         | 7.4 – 32           | 16.9                   | World Bank (WDI)     |
+| PM2.5 Pollution Exposure         | µg/m$_3$                         | 7.4 – 63.3      | 25.0       | World Bank (WDI)     |
+
+
+\newpage
+
+# Exploratory Analysis 
+The following summary statistic table provides an overview of the three indicators from 2010 to 2020, as part of the data exploration.
+```{r indicator.summary, echo=FALSE, message=FALSE, warning=FALSE}
+#Computing the mean, maximum value, minimum value, standard deviation, and the range for each indicator
+Summary_Stats_Indicator <- Sus_Env_Processed %>%
+  group_by(`Series Name`) %>%
+  summarize(
+    n_obs = n(),  
+    mean = mean(Value, na.rm = TRUE),  
+    max = max(Value, na.rm = TRUE),    
+    min = min(Value, na.rm = TRUE),    
+    sd = sd(Value, na.rm = TRUE),     
+    range = max(Value, na.rm = TRUE) - min(Value, na.rm = TRUE) 
+  )
+
+
+#Use the `kable` function to produce the summary statistic table in markdown format
+#Producing the table for the summary statistic for three indicators
+knitr::kable(Summary_Stats_Indicator, caption = "Summary Statistics for CO2, PM, and Renew", col.names = c("Series Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
+
+```
+
+The following three summary statistic tables provide an overview of the three indicators for each country from 2010 to 2020, as part of the data exploration.
+```{r indicator.summary.country, echo=FALSE, message=FALSE, warning=FALSE}
+##Creating separate datasets for three variables of interest
+CO2 <- Sus_Env_Processed %>% 
+  filter(`Series Name` == "CO2")
+Renew <- Sus_Env_Processed %>% 
+  filter(`Series Name` == "Renew")
+PM <- Sus_Env_Processed %>% 
+  filter(`Series Name` == "PM")
+
+#CO2 Emissions
+##Computing the mean, maximum value, minimum value, standard deviation, and the range for CO2 Emissions in each country
+Summary_Stats_CO2 <- CO2 %>%
+  group_by(`Country Name`) %>%
+  summarize(
+    n_obs = n(),  
+    mean = mean(Value, na.rm = TRUE),  
+    max = max(Value, na.rm = TRUE),    
+    min = min(Value, na.rm = TRUE),    
+    sd = sd(Value, na.rm = TRUE),     
+    range = max(Value, na.rm = TRUE) - min(Value, na.rm = TRUE) 
+  )
+
+##Use the `kable` function to produce the summary statistic table in markdown format
+##Producing the table for the summary statistic for CO2 Emissions in each country
+knitr::kable(Summary_Stats_CO2, caption = "Summary Statistics for CO2 Emissions (metric tons per capita)", col.names = c("Country Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
+
+#Renewable Energy Consumption
+##Computing the mean, maximum value, minimum value, standard deviation, and the range for renewable energy consumption in each country
+Summary_Stats_Renew <- Renew %>%
+  group_by(`Country Name`) %>%
+  summarize(
+    n_obs = n(),  
+    mean = mean(Value, na.rm = TRUE),  
+    max = max(Value, na.rm = TRUE),    
+    min = min(Value, na.rm = TRUE),    
+    sd = sd(Value, na.rm = TRUE),     
+    range = max(Value, na.rm = TRUE) - min(Value, na.rm = TRUE) 
+  )
+
+##Use the `kable` function to produce the summary statistic table in markdown format
+##Producing the table for the summary statistic for renewable energy consumption in each country
+knitr::kable(Summary_Stats_Renew, caption = "Summary Statistics for Renewable Energy Consumption (% of total final energy consumption)", col.names = c("Country Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
+
+
+#PM2.5 Pollution Exposure
+##Computing the mean, maximum value, minimum value, standard deviation, and the range for PM2.5 Pollution Exposure in each country
+Summary_Stats_PM <- PM %>%
+  group_by(`Country Name`) %>%
+  summarize(
+    n_obs = n(),  
+    mean = mean(Value, na.rm = TRUE),  
+    max = max(Value, na.rm = TRUE),    
+    min = min(Value, na.rm = TRUE),    
+    sd = sd(Value, na.rm = TRUE),     
+    range = max(Value, na.rm = TRUE) - min(Value, na.rm = TRUE) 
+  )
+
+##Use the `kable` function to produce the summary statistic table in markdown format
+##Producing the table for the summary statistic for PM2.5 Pollution Exposure in each country
+knitr::kable(Summary_Stats_PM, caption = "Summary Statistics for PM2.5 Pollution Exposure (mean annual exposure in micrograms per cubic meter)", col.names = c("Country Name", "Observations", "Mean", "Max", "Min", "SD", "Range") , digits = 2)
+
+```
+
+The exploratory analysis of CO2 emissions, renewable energy usage, and PM2.5 exposure data involved initial visualizations of each indicator across four countries (United States, Germany, China, and Colombia) from 2010-2020. After preliminary graphs revealed scaling challenges due to wide variations between nations, the y-axis was adjusted to better display trends while preserving comparisons. Examining differences in each indicator's levels, trajectories, and volatility helped identify potential patterns worthy of deeper investigation in subsequent analysis. In this way, this section could examine how CO2 emissions, renewable energy usage, and PM2.5 exposure have evolved from 2010 to 2020 in Germany, the United States, China, and Colombia. 
+
+```{r normalized.CO2 Emissions.country, echo=FALSE, message=FALSE, warning=FALSE, fig.align='left', fig.height=3, fig.cap= "Normalized CO2 Emissions  (2010 = 1.0)"}
+knitr::opts_chunk$set(echo = TRUE)
+# Normalized to 2010 values for comparison
+CO2_normalized <- CO2 %>%
+  group_by(`Country Code`) %>%
+  mutate(Normalized = Value / first(Value))
+
+CO2_normalized_graph <- ggplot(CO2_normalized, aes(x = Year, y = Normalized, color = `Country Code`, group = `Country Code`)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c("CHN" = "red", "COL" = "darkgreen", 
+                                "DEU" = "turquoise", "USA" = "purple"),
+                     labels = c("China", "Colombia", "Germany", "USA")) +
+  labs(title = "Normalized CO2 Emissions  (2010 = 1.0)", 
+       y = "Relative to 2010 Levels") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+print (CO2_normalized_graph)
+
+
+```
+
+Between 2010 and 2020, Germany and the United States exhibited a downward trend in CO2 emissions, whereas China showed an upward trend. Colombia experienced an increase in emissions from 2010 to 2016, followed by a decline in the subsequent years.
+This normalized graph highlights that while absolute emissions varied greatly, throughout 2010 to 2020:
+-   The U.S. achieved the largest relative reduction (-25%)
+-   China's emissions grew the most (+22%)
+-   Colombia remained stable (+0.08%)
+-   Germany showed a moderate decline (-23%)
+
+
+```{r normalized.Renewable Energy Consumption.country, echo=FALSE, message=FALSE, warning=FALSE,fig.align='left', fig.height=3, fig.cap= "Normalized Renewable Energy Consumption (2010 = 1.0)"}
+# Normalized to 2010 values for comparison
+Renew_normalized <- Renew %>%
+  group_by(`Country Code`) %>%
+  mutate(Normalized = Value / first(Value))
+
+Renew_normalized_graph <- ggplot(Renew_normalized, aes(x = Year, y = Normalized, color = `Country Code`, group = `Country Code`)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c("CHN" = "red", "COL" = "darkgreen", 
+                                "DEU" = "turquoise", "USA" = "purple"),
+                     labels = c("China", "Colombia", "Germany", "USA")) +
+  labs(title = "Normalized Renewable Energy Consumption (2010 = 1.0)", 
+       y = "Relative to 2010 Levels") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+print (Renew_normalized_graph)
+
+
+```
+From 2010 to 2020, China, Germany, and the United States all demonstrated a notable upward trend in renewable energy consumption, while Colombia exhibited a modest overall increase. 
+This normalized graph highlights that while absolute renewable energy consumption level varied greatly:
+-   Germany achieved the largest relative increase (+60%)
+-   The U.S. achieved an evident relative increase, too (+50%)
+-   China showed a moderate increase (+21%)
+-   Colombia remained stable (+0.06%)
+
+
+```{r normalized.PM2.5 Pollution Exposure.country, echo=FALSE, message=FALSE, warning=FALSE,fig.align='left', fig.height=3, fig.cap= "Normalized PM2.5 Pollution Exposure (2010 = 1.0)" }
+# Normalized to 2010 values for comparison
+PM_normalized <- PM %>%
+  group_by(`Country Code`) %>%
+  mutate(Normalized = Value / first(Value))
+
+PM_normalized_graph <- ggplot(PM_normalized, aes(x = Year, y = Normalized, color = `Country Code`, group = `Country Code`)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c("CHN" = "red", "COL" = "darkgreen", 
+                                "DEU" = "turquoise", "USA" = "purple"),
+                     labels = c("China", "Colombia", "Germany", "USA")) +
+  labs(title = "Normalized PM2.5 Pollution Exposure (2010 = 1.0)", 
+       y = "Relative to 2010 Levels") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+print (PM_normalized_graph)
+
+
+```
+
+Between 2010 and 2020, all four countries exhibited a significant decline in PM2.5 pollution exposure, although China experienced an initial increase from 2010 to 2013.
+This normalized graph highlights that while absolute PM2.5 pollution exposure level varied greatly:
+-   Germany achieved the largest relative reduction (-27%)
+-   The U.S. achieved evident relative reduction, too (-17%)
+-   China and Colombia both showed a moderate reduction (-11% and -12%, respectively)
+
+These preliminary visualizations suggest fundamentally different CO2 emissions, renewable energy usage, and PM2.5 exposure trajectories across countries, which the subsequent analysis will examine in greater depth through correlation tests, statistical comparisons, and policy context.
+
+
+\newpage
+
+# Analysis
+## Question 1: What is the relationship between renewable energy adoption and CO2 emissions across countries and over time?
+```{r RQ1.1, echo=FALSE, message=FALSE, warning=FALSE, fig.align='left', fig.height=3, fig.cap= "Cross Country Comparison of Renewable Energy Trends"}
+knitr::opts_chunk$set(echo = TRUE)
+##Creating separate datasets regarding each variable of interest across four countries
+###PM
+PM_USA <- PM %>% 
+  filter(`Country Code` == "USA")
+PM_DEU <- PM %>% 
+  filter(`Country Code` == "DEU")
+PM_COL <- PM %>% 
+  filter(`Country Code` == "COL")
+PM_CHN <- PM %>% 
+  filter(`Country Code` == "CHN")
+
+###CO2
+CO2_USA <- CO2 %>% 
+  filter(`Country Code` == "USA")
+CO2_DEU <- CO2 %>% 
+  filter(`Country Code` == "DEU")
+CO2_COL <- CO2 %>% 
+  filter(`Country Code` == "COL")
+CO2_CHN <- CO2 %>% 
+  filter(`Country Code` == "CHN")
+
+###Renew
+Renew_USA <- Renew %>% 
+  filter(`Country Code` == "USA")
+Renew_DEU <- Renew %>% 
+  filter(`Country Code` == "DEU")
+Renew_COL <- Renew %>% 
+  filter(`Country Code` == "COL")
+Renew_CHN <- Renew %>% 
+  filter(`Country Code` == "CHN")
+
+
+#cross country comparison for renewable energy
+# Find the max and min Value values
+max_value_Renew <- which.max(Renew$Value)
+min_value_Renew <- which.min(Renew$Value)
+
+# Create separate annotation data with nudging
+label_data <- Renew[c(max_value_Renew, min_value_Renew), ]
+label_data$nudge_y <- c(-0.2, 0.5)     # Adjust label position: max down, min up
+label_data$vjust   <- c(1.5, -0.5)
+
+# Plot the line graph
+ggplot(Renew, aes(x = Year, y = Value, group = `Country Code`, color = `Country Code`)) +
+  geom_line(size = 1.5) +
+  geom_text(data = label_data[1, ], aes(label = Value), 
+            vjust = label_data$vjust[1], nudge_y = label_data$nudge_y[1], size = 4) +
+  geom_text(data = label_data[2, ], aes(label = Value), 
+            vjust = label_data$vjust[2], nudge_y = label_data$nudge_y[2], size = 4) +
+  labs(
+    title = "Cross Country Comparison of Renewable Energy Trends", 
+    x = "Year", 
+    y = "% of Energy Consumption"
+  ) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.title = element_blank()) +
+  scale_y_continuous(expand = expansion(mult = c(0.1, 0.1))) +  # Add space above and below
+  coord_cartesian(clip = "off")  # Prevent labels from being clipped
+
+
+```
+### Overview of Renewable Energy Consumption
+The widespread adoption of renewable energy is essential to mitigating the impacts of climate change caused by human activity. Renewable energy sources, such as solar, wind, geothermal, and hydropower, hold the potential to transform global energy systems, particularly by providing electricity to the **760 million people** who currently lack access to it. Additionally, replacing fossil fuels like coal, oil, and natural gas with renewable energy is crucial for reducing greenhouse gas emissions.
+Although countries worldwide have made some progress in adopting renewable energy, the pace remains insufficient. In 2020, renewables accounted for just '12.6% of global energy consumption'. This rate of adoption is far from adequate to meet climate targets. To effectively limit global warming, it is necessary to 'triple renewable energy capacity by 2030'. Our analysis reveals that some nations have made more significant strides toward achieving this goal than others.
+The World Bank tracks renewable energy use as a percentage of total energy consumption. In 2020, the average renewable energy share across the four countries in our study was **16.88%**. Among these countries, **Colombia** stands out as a leader, reaching a peak of **32% renewable energy** in 2017. **Germany** follows, with impressive but still insufficient renewable energy adoption compared to Colombia. In stark contrast, **the United States** has been much slower to transition to renewables, with a peak share of just **11% in 2020**, indicating substantial underperformance relative to global needs.
+
+### The Correlation Analysis
+```{r RQ1.2, message=FALSE, warning=FALSE, include=FALSE}
+# Calculate the correlation between Renewable and CO2
+correlationCO2COL <- cor(CO2_COL$Value, Renew_COL$Value, method = "pearson")
+print(correlationCO2COL)
+correlationCO2CHN <- cor(CO2_COL$Value, Renew_CHN$Value, method = "pearson")
+print(correlationCO2CHN)
+correlationCO2USA <- cor(CO2_COL$Value, Renew_USA$Value, method = "pearson")
+print(correlationCO2USA)
+correlationCO2DEU <- cor(CO2_COL$Value, Renew_DEU$Value, method = "pearson")
+print(correlationCO2DEU)
+```
+The correlation analysis reveals no universal relationship between renewable energy adoption and CO2 emissions. While China shows a slight negative trend (-0.15), other countries (Colombia, USA, Germany) exhibit positive or neutral correlations (0.52, 0.24, and 0.12 respectively). The results suggest that renewables alone are insufficient to cut emissions without explicit fossil fuel phase-outs. This underscores that national context—energy mix, policy, and economic growth—drives whether renewables effectively mitigate CO2.
+
+### The Linear Regression Analysis
+```{r RQ1.3, message=FALSE, warning=FALSE, include=FALSE}
+# Linear regression for each country: CO2 as a function of Renewables
+model_COL_Q1 <- lm(CO2_COL$Value ~ Renew_COL$Value)
+model_CHN_Q1 <- lm(CO2_CHN$Value ~ Renew_CHN$Value)
+model_USA_Q1 <- lm(CO2_USA$Value ~ Renew_USA$Value)
+model_DEU_Q1 <- lm(CO2_DEU$Value ~ Renew_DEU$Value)
+
+#Linear regression for four countries: CO2 as a function of Renewables
+# Merge CO2 and Renewable data for each country
+merged_data <- merge(CO2, Renew, by = c("Country Code", "Year"), suffixes = c("_CO2", "_Renew"))
+model_All_Q1 <- lm(merged_data$Value_CO2 ~ merged_data$Value_Renew)
+
+# Summary to get p-values and R²
+summary(model_COL_Q1)
+summary(model_CHN_Q1)
+summary(model_USA_Q1)
+summary(model_DEU_Q1)
+summary(model_All_Q1)
+
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Create a summary table for Renew ~ CO2 regressions
+summary_table_Q1 <- data.frame(
+  Country = c("Colombia", "China", "USA", "Germany", "Overall"),
+  Coefficient = c(coef(model_COL_Q1)[2], coef(model_CHN_Q1)[2], coef(model_USA_Q1)[2], coef(model_DEU_Q1)[2],coef(model_All_Q1)[2]),
+  p_value = c(summary(model_COL_Q1)$coefficients[2,4],
+              summary(model_CHN_Q1)$coefficients[2,4],
+              summary(model_USA_Q1)$coefficients[2,4],
+              summary(model_DEU_Q1)$coefficients[2,4],
+              summary(model_All_Q1)$coefficients[2,4]),
+  R_squared = c(summary(model_COL_Q1)$r.squared,
+                summary(model_CHN_Q1)$r.squared,
+                summary(model_USA_Q1)$r.squared,
+                summary(model_DEU_Q1)$r.squared,
+                summary(model_All_Q1)$r.squared)
+)
+
+# Add direction and significance flags
+summary_table_Q1$Direction <- ifelse(summary_table_Q1$Coefficient > 0, "↑", "↓")
+summary_table_Q1$Significant <- ifelse(summary_table_Q1$p_value < 0.05, "Yes", "No")
+
+# Round values for cleaner display
+summary_table_Q1$Coefficient <- round(summary_table_Q1$Coefficient, 3)
+summary_table_Q1$p_value <- signif(summary_table_Q1$p_value, 3)
+summary_table_Q1$R_squared <- round(summary_table_Q1$R_squared, 2)
+
+# Reorder and print
+summary_table_Q1 <- summary_table_Q1[, c("Country", "Coefficient", "Direction", "p_value", "Significant", "R_squared")]
+rownames(summary_table_Q1) <- c("Renew_COL", "Renew_CHN", "Renew_USA", "Renew_DEU", "Renew_ALL")
+
+
+
+#Producing a table
+knitr::kable(summary_table_Q1, caption = "Linear Regression Results for Renew ~ CO2", col.names = c("Country", "Coefficient", "Direction", "p_value", "Significant", "R_squared") , digits = 2)
+
+```
+
+
+#### Results: 
+-   Colombia: It is predicted 0.03921 metric tons per capita CO2 emissions will increase for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 9, F = 3.319., p = 0.1018). The p-value is 0.1018, suggesting this result is statistically insignificant. The adjusted R-squared is 0.1883, it suggests 18.83% of the variability in CO2 emissions is explained by changes in renewable energy consumption.
+
+-   China: It is predicted 0.21525 metric tons per capita CO2 emissions will increase for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 9, F = 6.583., p = 0.0304). The p-value is 0.0304 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.3583, it suggests 35.83% of the variability in CO2 emissions is explained by changes in renewable energy consumption. 
+
+-   The U.S.: It is predicted 1.0615 metric tons per capita CO2 emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 9, F = 86.46., p = 6.534e-06). The p-value is 6.534e-06 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.8952, it suggests 89.52% of the variability in CO2 emissions is explained by changes in renewable energy consumption. 
+
+-  Germany: It is predicted 0.33480 metric tons per capita CO2 emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 9, F = 58.95, p = 3.069e-05). The p-value is 3.069e-05 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.8528, it suggests 85.28% of the variability in CO2 emissions is explained by changes in renewable energy consumption. 
+
+-  All four countries: It is predicted 0.51838 metric tons per capita CO2 emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 42, F = 132.1, p = 1.508e-14). The p-value is 1.508e-14 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.7529, it suggests 75.29% of the variability in CO2 emissions is explained by changes in renewable energy consumption. 
+
+#### Analysis:
+The linear regression results suggest varying impacts of renewable energy adoption on CO2 emissions across countries. In the United States and Germany, there is a strong and statistically significant negative relationship between the renewable energy index and CO2 emissions, indicating that increased renewable energy usage has contributed meaningfully to emissions reductions. Specifically, renewable energy explains over 90% of the variation in CO2 emissions in the U.S. and 87% in Germany, highlighting effective decarbonization strategies. In contrast, China's regression shows a significant but positive relationship, implying that despite expanding renewables, CO2 emissions have continued to rise, likely due to sustained industrial growth and fossil fuel reliance. For Colombia, the relationship is positive but not statistically significant, suggesting that renewables may not yet play a major role in reducing emissions, possibly due to their smaller share in the energy mix or concurrent growth in energy demand. These findings underscore the importance of national context in shaping the emissions impact of renewable energy development. However, across all four countries, the linear regression analysis reveals a statistically significant negative relationship between the adoption of renewable energy and CO2 emissions. 
+
+### Scatterplot with Regression Line
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.align='left', fig.height=3, fig.cap= "Renewable Energy Adoption vs. CO2 Emissions (2010-2020)"}
+# Scatterplot with regression line
+ggplot(merged_data, aes(x = Value_Renew, y = Value_CO2, color = `Country Code`)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +  # Add regression line
+  labs(
+    title = "Renewable Energy Adoption vs. CO2 Emissions (2010-2020)",
+    x = "Renewable Energy (% of Total Consumption)",
+    y = "CO2 Emissions (Metric Tons per Capita)",
+    color = "Country"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+Based on the graph showing renewable energy adoption versus CO2 emissions across the USA, Germany, China, and Colombia from 2010-2020, there's a generally negative correlation between the percentage of renewable energy and carbon emissions per capita. Countries with higher renewable energy adoption tend to have lower per capita CO2 emissions, as demonstrated by Colombia having the highest renewable percentage (28-30%) and lowest emissions (about 2 metric tons per capita), while the USA shows the opposite pattern with low renewable adoption (8-12%) and high emissions (15-18 metric tons). The downward trend lines for individual countries (particularly visible for the USA and Germany) further suggest that as nations increase their renewable energy share over time, their emissions decrease accordingly, though other factors like overall energy consumption, economic development stage, and industrial activity also influence emission levels, as evidenced by China's somewhat different pattern.
+
+
+## Question 2: Are there observable correlations between CO2 emissions and PM2.5 pollution exposure?
+
+```{r RQ2.1, echo=FALSE, message=FALSE, warning=FALSE, fig.align='left', fig.height=3, fig.cap= "Cross Country Comparison of PM2.5 Air Pollution"}
+# Round Value values to 2 decimal places
+PM$Value <- round(PM$Value, 2)
+
+max_index <- which.max(PM$Value)
+min_index <- which.min(PM$Value)
+
+# Re-run plotting code
+ggplot(PM, aes(x = Year, y = Value, group = `Country Code`, color = `Country Code`)) +
+  geom_line(size = 1.5) +
+  labs(title = "Cross Country Comparison of PM2.5 Air Pollution", 
+       x = "Year") +
+  ylab(expression ("PM2.5 ("*mu*~g/m^3*")"))+
+  geom_text(
+    data = PM[c(max_index, min_index), ],
+    aes(label = Value),  # Now shows 2 decimal places
+    vjust = -0.5, hjust = 0.8, size = 4,
+    nudge_x = 0.1, nudge_y = 0.1
+  ) +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5), legend.title = element_blank())
+
+```
+### Overview of PM2.5
+The proportion of a nation's population exposed to ambient PM2.5 concentrations above the WHO's recommended threshold of 10 micrograms per cubic meter serves as a critical indicator of air quality-related health risks. These fine particulate pollutants, primarily generated through combustion processes including vehicular emissions, industrial operations, and residential heating, demonstrate well-established dose-response relationships with adverse health outcomes. Epidemiological research confirms both acute effects such as increased hospitalizations for cardiorespiratory conditions and emergency room visits, as well as chronic consequences including reduced pulmonary function and elevated cardiovascular disease risk, with particular severity among pediatric and geriatric populations.
+
+Our cross-national comparison reveals pronounced disparities in exposure levels, with China exhibiting systematically higher PM2.5 concentrations than the United States, Germany, and Colombia. This pattern likely reflects China's unique combination of coal-dependent energy infrastructure (accounting for approximately 60% of primary energy consumption), rapid industrial expansion during the 2010-2020 period averaging 8% annual GDP growth, and meteorological conditions prone to atmospheric stagnation. The United States demonstrates measurable improvements post-2010 attributable to Clean Air Act enforcement and fuel switching initiatives, while Germany maintains stable reductions despite complexities in its energy transition. Colombia's comparatively favorable profile correlates with its hydroelectric-dominated energy matrix, where renewables constitute over 70% of generation capacity.
+
+These findings underscore the effectiveness of integrated policy approaches combining emission controls, energy infrastructure modernization, and urban planning interventions. The China-United States divergence particularly highlights the health benefits achievable through rigorous power plant emission standards, vehicle fleet renewal programs, and comprehensive air quality monitoring systems. Future research directions should prioritize quantitative health impact assessments using WHO-recommended methodologies, detailed source apportionment studies to identify sector-specific contributions, and longitudinal evaluations of intervention effectiveness, such as China's recent "Blue Sky" policy initiatives.
+
+### The Correlation Analysis
+```{r RQ2.2, message=FALSE, warning=FALSE, include=FALSE}
+# Calculate Pearson correlations (linear relationship strength):
+correlationPMCOL <- cor(CO2_COL$Value, PM_COL$Value, 
+                     method = "pearson", use = "complete.obs")  # Colombia
+correlationPMCHN <- cor(CO2_CHN$Value, PM_CHN$Value, 
+                     method = "pearson", use = "complete.obs")  # China
+correlationPMUSA <- cor(CO2_USA$Value, PM_USA$Value,  # Corrected from USACOL to PMUSA
+                     method = "pearson", use = "complete.obs")  # USA
+correlationPMDEU <- cor(CO2_DEU$Value, PM_DEU$Value, 
+                     method = "pearson", use = "complete.obs")  # Germany
+print(correlationPMCOL)
+print(correlationPMCHN)
+print(correlationPMUSA)
+print(correlationPMDEU)
+
+```
+While observable correlations exist, their strength and direction vary significantly by national context. This underscores the need for country-specific air quality management strategies that account for local emission source profiles and development pathways. The strong US correlation (0.90) and moderate Germany correlation (0.63) suggests co-control benefits from decarbonization, whereas China/Colombia's results (-0.21 and -0.33, respectively) indicate PM2.5 reduction may require additional targeted measures beyond CO2 mitigation.
+
+### Linear Regression Analysis
+```{r RQ2.3, message=FALSE, warning=FALSE, include=FALSE}
+# Linear regression for each country: PM2.5 as a function of CO2 emissions
+model_COL_Q2 <- lm(PM_COL$Value ~ CO2_COL$Value)
+model_CHN_Q2 <- lm(PM_CHN$Value ~ CO2_CHN$Value)
+model_USA_Q2 <- lm(PM_USA$Value ~ CO2_USA$Value)
+model_DEU_Q2 <- lm(PM_DEU$Value ~ CO2_DEU$Value)
+
+# Linear regression for all four countries: PM2.5 as a function of CO2 emissions
+# Merge CO2 and PM2.5 data
+merged_pm_data <- merge(CO2, PM, by = c("Country Code", "Year"), suffixes = c("_CO2", "_PM"))
+model_ALL_Q2 <- lm(merged_pm_data$Value_PM ~ merged_pm_data$Value_CO2)
+
+# Summary to get p-values and R²
+summary(model_COL_Q2)
+summary(model_CHN_Q2)
+summary(model_USA_Q2)
+summary(model_DEU_Q2)
+summary(model_ALL_Q2)
+
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Create a summary table for PM2.5 ~ CO2 regressions
+summary_table_Q2 <- data.frame(
+  Country = c("Colombia", "China", "USA", "Germany", "Overall"),
+  Coefficient = c(coef(model_COL_Q2)[2], coef(model_CHN_Q2)[2], coef(model_USA_Q2)[2], coef(model_DEU_Q2)[2],coef(model_ALL_Q2)[2]),
+  p_value = c(summary(model_COL_Q2)$coefficients[2,4],
+              summary(model_CHN_Q2)$coefficients[2,4],
+              summary(model_USA_Q2)$coefficients[2,4],
+              summary(model_DEU_Q2)$coefficients[2,4],
+              summary(model_ALL_Q2)$coefficients[2,4]),
+  R_squared = c(summary(model_COL_Q2)$r.squared,
+                summary(model_CHN_Q2)$r.squared,
+                summary(model_USA_Q2)$r.squared,
+                summary(model_DEU_Q2)$r.squared,
+                summary(model_ALL_Q2)$r.squared)
+)
+
+# Add direction and significance flags
+summary_table_Q2$Direction <- ifelse(summary_table_Q2$Coefficient > 0, "↑", "↓")
+summary_table_Q2$Significant <- ifelse(summary_table_Q2$p_value < 0.05, "Yes", "No")
+
+# Round values for cleaner display
+summary_table_Q2$Coefficient <- round(summary_table_Q2$Coefficient, 3)
+summary_table_Q2$p_value <- signif(summary_table_Q2$p_value, 3)
+summary_table_Q2$R_squared <- round(summary_table_Q2$R_squared, 2)
+
+# Reorder and print
+summary_table_Q2 <- summary_table_Q2[, c("Country", "Coefficient", "Direction", "p_value", "Significant", "R_squared")]
+rownames(summary_table_Q2) <- c("PM_COL", "PM_CHN", "PM_USA", "PM_DEU", "PM_ALL")
+
+
+
+#Producing a table
+knitr::kable(summary_table_Q2, caption = "Linear Regression Results for PM2.5 ~ CO2", col.names = c("Country", "Coefficient", "Direction", "p_value", "Significant", "R_squared") , digits = 2)
+
+
+```
+
+#### Results: 
+
+-   Colombia: It is predicted 4.395 metric tons per capita CO2 emissions will decrease for every 1 micrograms per cubic meter mean annual PM2.5 pollution exposure increase (df = 8, F = 1.002., p = 0.3462). The p-value is 0.3462, suggesting this result is statistically insignificant. The adjusted R-squared is 0.0002086, it suggests 0.02% of the variability in CO2 emissions is explained by changes in PM2.5 pollution exposure. 
+
+-   China: It is predicted 3.105 metric tons per capita CO2 emissions will decrease for every 1 micrograms per cubic meter mean annual PM2.5 pollution exposure increase (df = 8, F = 0.3823., p = 0.5536). The p-value is 0.5536, suggesting this result is statistically insignificant. The adjusted R-squared is -0.0737.
+
+-   The U.S.: It is predicted 0.7136 metric tons per capita CO2 emissions will increase for every 1 micrograms per cubic meter mean annual PM2.5 pollution exposure increase (df = 8, F = 33.06., p = 0.0004293).  The p-value is 0.0004293 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.7808, it suggests 78.08% of the variability in CO2 emissions is explained by changes in PM2.5 pollution exposure. 
+
+-  Germany: It is predicted 2.0180 metric tons per capita CO2 emissions will increase for every 1 micrograms per cubic meter mean annual PM2.5 pollution exposure increase (df = 8, F = 5.437., p = 0.04803). The p-value is 0.04803 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.3302, it suggests 33.02% of the variability in CO2 emissions is explained by changes in PM2.5 pollution exposure. 
+
+-  All four countries: It is predicted 1.5174 metric tons per capita CO2 emissions will decrease for every 1 micrograms per cubic meter mean annual PM2.5 pollution exposure increase (df = 38, F = 8.134, p = 0.00699). The p-value is 0.00699 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.1546, it suggests 15.46% of the variability in CO2 emissions is explained by changes in PM2.5 pollution exposure. 
+
+#### Analysis
+The second set of linear regression models investigates the relationship between PM2.5 concentrations and CO2 emissions in each country and all four countries. Across all four countries, the linear regression analysis reveals a statistically significant negative relationship between the PM2.5 pollution exposure and CO2 emissions, suggesting that higher CO2 emissions are associated with lower PM2.5 concentrations, which might reflect the influence of decarbonization technologies or cleaner combustion. For the USA and Germany, both coefficients are positive and statistically significant, indicating that higher CO2 emissions are associated with increased PM2.5 levels. However, the results for Colombia and China are not statistically significant, with p-values above 0.3 and very low R-squared values, implying little explanatory power of CO2 emissions on PM2.5 in these contexts. Overall, the findings underscore heterogeneous national dynamics, possibly driven by differing energy sources, pollution control technologies, and industrial policies. 
+
+### Scatterplot with Regression Line
+```{r RQ2.4, echo=FALSE, message=FALSE, warning=FALSE, fig.align='left', fig.height=3, fig.cap= "CO2 Emissions vs. PM2.5 Pollution Exposure (2010-2020)"}
+# Scatterplot
+ggplot(merged_pm_data, aes(x = Value_CO2, y = Value_PM, color = `Country Code`)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
+  labs(
+    title = "CO2 Emissions vs. PM2.5 Pollution Exposure (2010-2020)",
+    x = "CO2 Emissions (Metric Tons per Capita)",
+    color = "Country"
+  ) +
+  ylab(expression ("PM2.5 Concentration ("*mu*~g/m^3*")"))+
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+Looking at the scatter plot of CO2 emissions versus PM2.5 pollution exposure from 2010-2020 across China, Colombia, Germany, and the USA reveals complex relationships between these environmental indicators. While the overall cross-country comparison shows a counterintuitive pattern—with higher-emission countries like the USA having lower PM2.5 levels than lower-emission countries like China and Colombia—there are notable within-country correlations for developed economies. As observed in the data points for Germany and the USA, there appears to be a positive correlation where years with higher carbon emissions tend to correspond with higher particulate pollution levels. This suggests that while economic development stage and environmental regulation may disconnect these measures globally, within similar economic systems, both types of emissions may share common drivers or respond to similar policy interventions. The USA exhibits the clearest positive correlation, with PM2.5 concentrations increasing alongside rising per capita CO2 emissions, indicating that domestic pollution control efforts need to address both greenhouse gases and particulate matter simultaneously. This nuanced relationship highlights the importance of considering both global patterns and country-specific trends when developing environmental policies.
+
+
+## Question 3:Which factor better predicts changes in CO2 emissions: renewable energy consumption, exposure to PM2.5 pollution, or a combination of both?
+### Four Countries
+```{r RQ3, include=FALSE}
+#Overall: 
+#Merging the dataset
+merged_Multiple <- left_join(merged_data, merged_pm_data, by = c("Country Code", "Year", "Country Name_CO2", "Series Name_CO2", "Value_CO2"))
+
+#Running an AIC to determine what set of explanatory variables is best suited to predict changes in CO2 emissions
+CO2.AIC <- lm(data = merged_Multiple, Value_CO2 ~ Value_Renew + Value_PM)
+step (CO2.AIC)
+
+#Running a multiple regression on both renewable energy consumption and exposure to PM2.5 pollution
+CO2.Mul.Reg <- lm(data = merged_Multiple, Value_CO2 ~ Value_Renew + Value_PM)
+summary(CO2.Mul.Reg)
+
+
+```
+
+
+
+```{r echo=FALSE}
+#Converting the AIC test results into a table
+AIC_ALL <- data.frame(
+  AIC = c(30.722, 78.688, 126.144))
+
+rownames(AIC_ALL) <- c("All", "Exclude Value_PM", "Exclude Value_Renew")
+
+
+#Producing a table
+knitr::kable(AIC_ALL, caption = "AIC Test Results for All Countries", col.names = c("AIC") , digits = 2)
+
+```
+
+
+Since the smaller the AIC value, the better.  Across all four countries, the model that includes both renewable energy consumption and the exposure to PM2.5 pollution can better explain the changes in CO2 emissions. By running a multiple regression, it is predicted 0.11720 metric tons per capita CO2 emissions will decrease for every 1 micrograms per cubic meter mean annual PM2.5 pollution exposure increase, and it is predicted 0.52076 metric tons per capita CO2 emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 37, F = 238, p = < 2.2e-16).  The p-value is < 2.2e-16 and less than 0.05, suggesting this model is statistically significant. The adjusted R-squared is 0.924, it suggests 92.4% of the variability in CO2 emissions is explained by changes in PM2.5 pollution exposure and renewable energy consumption. 
+
+### Colombia
+```{r include=FALSE}
+#Colombia
+#Merging the dataset
+merged_COL_Step1 <- left_join(PM_COL, Renew_COL, by = c("Country Code", "Year", "Country Name"))
+merged_COL <- left_join(merged_COL_Step1, CO2_COL, by = c("Country Code", "Year", "Country Name"))
+colnames(merged_COL) <- c("Country Name", "Country Code", "PM Indicator", "Year", "Value_PM", "Renew Indicator", "Value_Renew", "CO2 Indicator", "Value_CO2")
+#Dropping N/A for the AIC test
+merged_COL <- na.omit(merged_COL)
+
+#Running an AIC to determine what set of explanatory variables is best suited to predict changes in CO2 emissions
+CO2.COL.AIC <- lm(data = merged_COL, Value_CO2 ~ Value_Renew + Value_PM)
+step (CO2.COL.AIC)
+
+
+```
+```{r echo=FALSE}
+#Converting the AIC test results into a table
+AIC_COL <- data.frame(
+  AIC = c(-44.336, -46.282, -43.798))
+
+rownames(AIC_COL) <- c("All", "Exclude Value_PM", "Exclude Value_Renew")
+
+#Producing a table
+knitr::kable(AIC_COL, caption = "AIC Test Results for Colombia", col.names = c("AIC") , digits = 2)
+```
+
+
+In Colombia, the model that includes only renewable energy consumption yields the lowest AIC result. Therefore, a multiple regression analysis is not conducted.
+
+### China
+```{r include=FALSE}
+#China
+#Merging the dataset
+merged_CHN_Step1 <- left_join(PM_CHN, Renew_CHN, by = c("Country Code", "Year", "Country Name"))
+merged_CHN <- left_join(merged_CHN_Step1, CO2_CHN, by = c("Country Code", "Year", "Country Name"))
+colnames(merged_CHN) <- c("Country Name", "Country Code", "PM Indicator", "Year", "Value_PM", "Renew Indicator", "Value_Renew", "CO2 Indicator", "Value_CO2")
+#Dropping N/A for the AIC test
+merged_CHN <- na.omit(merged_CHN)
+
+
+#Running an AIC to determine what set of explanatory variables is best suited to predict changes in CO2 emissions
+CO2.CHN.AIC <- lm(data = merged_CHN, Value_CO2 ~ Value_Renew + Value_PM)
+step (CO2.CHN.AIC)
+
+#Running a multiple regression on both renewable energy consumption and exposure to PM2.5 pollution
+CO2.CHN.Reg <- lm(data = merged_CHN, Value_CO2 ~ Value_Renew + Value_PM)
+summary(CO2.CHN.Reg)
+
+```
+```{r echo=FALSE}
+#Converting the AIC test results into a table
+AIC_CHN <- data.frame(
+  AIC = c(--26.221, -20.483, -17.762))
+
+rownames(AIC_CHN) <- c("All", "Exclude Value_PM", "Exclude Value_Renew")
+
+
+#Producing a table
+knitr::kable(AIC_CHN, caption = "AIC Test Results for China", col.names = c("AIC") , digits = 2)
+```
+
+In China, the model that includes both renewable energy consumption and the exposure to PM2.5 pollution can better explain the changes in CO2 emissions. By running a multiple regression, it is predicted 0.10314 metric tons per capita CO2 emissions will increase for every 1 micrograms per cubic meter mean annual PM2.5 pollution exposure increase, and it is predicted 0.69779 metric tons per capita CO2 emissions will increase for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 7, F = 6.937, p = 0.02184).  The p-value is 0.02184 and less than 0.05, suggesting this model is statistically significant. The adjusted R-squared is 0.5689, it suggests 56.89% of the variability in CO2 emissions is explained by changes in PM2.5 pollution exposure and renewable energy consumption. 
+
+
+### USA
+```{r include=FALSE}
+#USA
+#Merging the dataset
+merged_USA_Step1 <- left_join(PM_USA, Renew_USA, by = c("Country Code", "Year", "Country Name"))
+merged_USA <- left_join(merged_USA_Step1, CO2_USA, by = c("Country Code", "Year", "Country Name"))
+colnames(merged_USA) <- c("Country Name", "Country Code", "PM Indicator", "Year", "Value_PM", "Renew Indicator", "Value_Renew", "CO2 Indicator", "Value_CO2")
+#Dropping N/A for the AIC test
+merged_USA <- na.omit(merged_USA)
+
+
+#Running an AIC to determine what set of explanatory variables is best suited to predict changes in CO2 emissions
+CO2.USA.AIC <- lm(data = merged_USA, Value_CO2 ~ Value_Renew + Value_PM)
+step (CO2.USA.AIC)
+
+#Running a multiple regression on both renewable energy consumption and exposure to PM2.5 pollution
+CO2.USA.Reg <- lm(data = merged_USA, Value_CO2 ~ Value_Renew + Value_PM)
+summary(CO2.USA.Reg)
+```
+```{r echo=FALSE}
+#Converting the AIC test results into a table
+AIC_USA <- data.frame(
+  AIC = c(-22.954, -22.077, -16.715))
+
+rownames(AIC_USA) <- c("All", "Exclude Value_PM", "Exclude Value_Renew")
+
+
+#Producing a table
+knitr::kable(AIC_USA, caption = "AIC Test Results for USA", col.names = c("AIC") , digits = 2)
+```
+In the United States, the model that includes both renewable energy consumption and the exposure to PM2.5 pollution can better explain the changes in CO2 emissions. By running a multiple regression, it is predicted 0.4195  metric tons per capita CO2 emissions will increase for every 1 micrograms per cubic meter mean annual PM2.5 pollution exposure increase, and it is predicted 0.6289 metric tons per capita CO2 emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 7, F = 37.44, p = 0.0001826).  The p-value is 0.0001826 and less than 0.05, suggesting this model is statistically significant. The adjusted R-squared is 0.8901, it suggests 89.01% of the variability in CO2 emissions is explained by changes in PM2.5 pollution exposure and renewable energy consumption. 
+
+### Germany
+```{r include=FALSE}
+#Germany
+#Merging the dataset
+merged_DEU_Step1 <- left_join(PM_DEU, Renew_DEU, by = c("Country Code", "Year", "Country Name"))
+merged_DEU <- left_join(merged_DEU_Step1, CO2_DEU, by = c("Country Code", "Year", "Country Name"))
+colnames(merged_DEU) <- c("Country Name", "Country Code", "PM Indicator", "Year", "Value_PM", "Renew Indicator", "Value_Renew", "CO2 Indicator", "Value_CO2")
+#Dropping N/A for the AIC test
+merged_DEU <- na.omit(merged_DEU)
+
+
+#Running an AIC to determine what set of explanatory variables is best suited to predict changes in CO2 emissions
+CO2.DEU.AIC <- lm(data = merged_DEU, Value_CO2 ~ Value_Renew + Value_PM)
+step (CO2.DEU.AIC)
+
+#Running a multiple regression on both renewable energy consumption and exposure to PM2.5 pollution
+CO2.DEU.Reg <- lm(data = merged_DEU, Value_CO2 ~ Value_Renew + Value_PM)
+summary(CO2.DEU.Reg)
+```
+```{r echo=FALSE}
+#Converting the AIC test results into a table
+AIC_DEU <- data.frame(
+  AIC = c(-26.587, -25.725, -15.977))
+
+rownames(AIC_DEU) <- c("All", "Exclude Value_PM", "Exclude Value_Renew")
+
+
+#Producing a table
+knitr::kable(AIC_DEU, caption = "AIC Test Results for Germany", col.names = c("AIC") , digits = 2)
+```
+In Germany, the model that includes both renewable energy consumption and the exposure to PM2.5 pollution can better explain the changes in CO2 emissions. By running a multiple regression, it is predicted 0.14587  metric tons per capita CO2 emissions will decrease for every 1 micrograms per cubic meter mean annual PM2.5 pollution exposure increase, and it is predicted 0.40331 metric tons per capita CO2 emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 7, F = 17.25, p = 0.001972).  The p-value is 0.001972 and less than 0.05, suggesting this model is statistically significant. The adjusted R-squared is 0.7831, it suggests 78.31% of the variability in CO2 emissions is explained by changes in PM2.5 pollution exposure and renewable energy consumption. 
+
+## Question 4: Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges?
+
+The analysis reveals distinct yet complementary policy approaches that countries can emulate to address interconnected environmental challenges. Colombia stands out as a renewable energy leader, achieving 32% renewable energy consumption through strategic harnessing of its natural resources. The country's success stems from innovative policies like the Energy Transition Law, which created tax incentives for renewable projects, and robust public-private partnerships exemplified by Ecopetrol's investments. Colombia's National Energy Plan demonstrates how developing nations can leverage geographic advantages - in this case, hydropower and bioenergy resources - to build sustainable energy systems. The planned expansion into wind and solar energy through competitive auctions in the Guajira region offers a replicable model for resource-rich developing countries.
+
+The United States provides critical lessons in air quality management, maintaining the lowest PM2.5 levels among the studied nations. This achievement primarily results from decades of stringent regulation under the Clean Air Act and its amendments, which imposed strict emissions caps on industries and vehicles. While the correlation between CO2 and PM2.5 reductions appears statistically weak, the U.S. experience shows how fuel switching and efficiency improvements can create valuable co-benefits for both climate and public health. America's regulatory framework offers a template for urbanizing nations struggling with particulate pollution, proving that emissions reductions aren't strictly prerequisite for air quality gains.
+
+Germany exemplifies comprehensive decarbonization, successfully reducing CO2 emissions by 14% while cutting PM2.5 exposure by nearly 30%. This dual achievement stems from Germany's integrated policy approach, combining aggressive renewable energy subsidies with a structured coal phaseout plan and meaningful carbon pricing (€25-30/ton). The German model demonstrates how developed economies can orchestrate just transitions through policy sequencing - first building renewable capacity, then retiring fossil assets - while maintaining energy security. This approach has created measurable climate and health benefits, making it particularly relevant for industrialized nations.
+
+China's experience, while highlighting the challenges of coal dependence, also shows promising policy innovations. The "Blue Sky" initiative reduced PM2.5 concentrations by 11% through stringent industrial emission standards and pilot carbon trading schemes. For coal-reliant developing economies, China's approach suggests that targeted industrial policies and gradual market mechanisms can achieve meaningful improvements even before full energy transitions are feasible. Each country's experience contributes unique insights to a global toolkit for sustainable development, emphasizing that effective solutions must be tailored to national circumstances while drawing on cross-border lessons. The collective experience underscores that environmental progress requires policy packages combining regulation, incentives, and innovation, adapted to each nation's resources and development stage.
+
+\newpage
+
+# Summary and Conclusions
+This study set out to explore the relationship between CO$_2$ emissions, renewable energy consumption, and PM2.5 air pollution in the context of sustainable development, using data from Germany, the United States, China, and Colombia between 2010 and 2020. These countries were selected to reflect a mix of developed and developing economies, offering comparative insights into how environmental outcomes vary by national context.
+
+Our analyses reveal that renewable energy consumption is associated with reductions in CO$_2$ emissions in some countries but not uniformly across all. The United States and Germany showed strong, statistically significant negative correlations between renewable energy adoption and emissions, suggesting that targeted decarbonization policies, such as subsidies, carbon pricing, and coal phaseouts, can drive measurable climate benefits. In contrast, China and Colombia demonstrated weaker or even positive correlations, reflecting the complexity of balancing economic growth, energy demand, and emissions in transitioning economies.
+
+When analyzing PM2.5 air pollution, we observed more mixed results. While PM2.5 exposure declined in all four countries during the study period, only the United States and Germany exhibited strong positive correlations between PM2.5 levels and CO$_2$ emissions. This suggests co-benefits of joint pollution and climate regulation. In contrast, China and Colombia showed weak or negative correlations, indicating that PM2.5 may be influenced by other sector-specific sources not directly tied to CO$_2$ emissions.
+
+Importantly, our multi-variable models demonstrated that combining renewable energy consumption and PM2.5 exposure as predictors improved the explanatory power for CO$_2$ emissions, particularly in the United States and Germany, where over 75% of the variation in emissions was explained by these two variables. This reinforces the idea that climate and air quality policies can be most effective when integrated.
+
+Overall, the findings suggest that while renewable energy and pollution controls are both vital, their impact depends on the country’s energy structure, policy environment, and development stage. Effective climate strategies must be multidimensional, combining renewable expansion with fossil fuel phaseout, industrial controls, and public health measures tailored to national contexts.
+
+\newpage
+
+# References
+World Meteorological Organization. “The Global Climate 2011-2020.” Wmo.int, 2023. https://library.wmo.int/records/item/68585-the-global-climate-2011-2020?offset=.
+  United Nations. (2023). The Sustainable Development Goals Report 2023. https://unstats.un.org/sdgs/report/2023/The-Sustainable-Development-Goals-Report-2023.pdf
+  United Nations. (2023). The Sustainable Development Goals Report 2023. https://unstats.un.org/sdgs/report/2023/The-Sustainable-Development-Goals-Report-2023.pdf
+  United Nations. (n.d). ”The 17 Goals”. https://sdgs.un.org/goals 
+  The World Bank. “World Development Indicators.” The World Bank, 2024. https://databank.worldbank.org/source/world-development-indicators.
+  United Nations. “What Is Renewable Energy?” United Nations, 2023. https://www.un.org/en/climatechange/what-is-renewable-energy#:~:text=Renewable%20energy%20is%20energy%20derived.
+  UNEP - UN Environment Programme. “Renewable Energy,” October 11, 2017. https://www.unep.org/topics/energy/renewable-energy/renewable-energy#:~:text=Driven%20by%20the%20global%20energy.
+  Ibid.
+  Brauer, M. et al. 2017, for the Global Burden of Disease Study 2017
+  California Air Resources Board. Inhalable Particulate Matter and Health (PM2.5 and PM10).  https://ww2.arb.ca.gov/resources/inhalable-particulate-matter-and-health#:~:text=5%3F-,PM10%20and%20PM2.,a%20significant%20proportion%20of%20PM10.
+  Chengcheng, Qiu. PM2.5 rebounds in China in 2023, after falling for 10 years straight. 22 Dec 2023, https://energyandcleanair.org/
+  Anwar, M. N., M. Iftikhar, B. Khush Bakhat, N. F. Sohail, Mujtaba Baqar, A. Yasir, and A. S. Nizami. "Sources of carbon dioxide and environmental Issues." Sustainable Agriculture Reviews 37: Carbon Sequestration Vol. 1 Introduction and Biochemical Methods (2019): 13-36.
+  Saidi, Kais, and Anis Omri. "Reducing CO2 emissions in OECD countries: do renewable and nuclear energy matter?." Progress in Nuclear Energy 126 (2020): 103425.
+  Liu, Jing-Yue, Richard T. Woodward, and Yue-Jun Zhang. "Has carbon emissions trading reduced PM2. 5 in China?." Environmental science & technology 55, no. 10 (2021): 6631-6643.
+  Gomez, Juan. “Colombia Can Lead the Energy Transition in Latin America.” Atlantic Council, May 6, 2022. https://www.atlanticcouncil.org/blogs/energysource/colombia-can-lead-the-energy-transition-in-latin-america/.
+  
+
+
