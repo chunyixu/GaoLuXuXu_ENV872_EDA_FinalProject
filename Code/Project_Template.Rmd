@@ -374,7 +374,7 @@ Although countries worldwide have made some progress in adopting renewable energ
 The World Bank tracks renewable energy use as a percentage of total energy consumption. In 2020, the average renewable energy share across the four countries in our study was **16.88%**. Among these countries, **Colombia** stands out as a leader, reaching a peak of **32% renewable energy** in 2017. **Germany** follows, with impressive but still insufficient renewable energy adoption compared to Colombia. In stark contrast, **the United States** has been much slower to transition to renewables, with a peak share of just **11% in 2020**, indicating substantial underperformance relative to global needs.
 
 The Correlation Analysis
-```{r RQ1.2, echo=FALSE}
+```{r RQ1.2, include=FALSE}
 # Calculate the correlation between Renewable and CO2
 correlationCO2COL <- cor(CO2_COL$Value, Renew_COL$Value, method = "pearson")
 print(correlationCO2COL)
@@ -385,7 +385,7 @@ print(correlationCO2USA)
 correlationCO2DEU <- cor(CO2_COL$Value, Renew_DEU$Value, method = "pearson")
 print(correlationCO2DEU)
 ```
-The correlation analysis reveals no universal relationship between renewable energy adoption and CO₂ emissions. While China shows a slight negative trend (-0.15), other countries (Colombia, USA, Germany) exhibit positive or neutral correlations, suggesting renewables alone are insufficient to cut emissions without explicit fossil fuel phase-outs. This underscores that national context—energy mix, policy, and economic growth—drives whether renewables effectively mitigate CO₂.
+The correlation analysis reveals no universal relationship between renewable energy adoption and CO₂ emissions. While China shows a slight negative trend (-0.15), other countries (Colombia, USA, Germany) exhibit positive or neutral correlations (0.52, 0.24, and 0.12 respectively). The results suggest that renewables alone are insufficient to cut emissions without explicit fossil fuel phase-outs. This underscores that national context—energy mix, policy, and economic growth—drives whether renewables effectively mitigate CO₂.
 
 The Linear Regression Analysis
 ```{r RQ1.3, echo=FALSE}
@@ -395,28 +395,38 @@ model_CHN_Q1 <- lm(CO2_CHN$Value ~ Renew_CHN$Value)
 model_USA_Q1 <- lm(CO2_USA$Value ~ Renew_USA$Value)
 model_DEU_Q1 <- lm(CO2_DEU$Value ~ Renew_DEU$Value)
 
+#Linear regression for four countries: CO2 as a function of Renewables
+# Merge CO2 and Renewable data for each country
+merged_data <- merge(CO2, Renew, by = c("Country Code", "Year"), suffixes = c("_CO2", "_Renew"))
+model_All_Q1 <- lm(merged_data$Value_CO2 ~ merged_data$Value_Renew)
+
 # Summary to get p-values and R²
 summary(model_COL_Q1)
 summary(model_CHN_Q1)
 summary(model_USA_Q1)
 summary(model_DEU_Q1)
+summary(model_All_Q1)
 
 ```
-The linear regression results suggest varying impacts of renewable energy adoption on CO₂ emissions across countries. In the United States and Germany, there is a strong and statistically significant negative relationship between the renewable energy index and CO₂ emissions, indicating that increased renewable energy usage has contributed meaningfully to emissions reductions. Specifically, renewable energy explains over 90% of the variation in CO₂ emissions in the U.S. and 87% in Germany, highlighting effective decarbonization strategies. In contrast, China's regression shows a significant but positive relationship, implying that despite expanding renewables, CO₂ emissions have continued to rise, likely due to sustained industrial growth and fossil fuel reliance. For Colombia, the relationship is positive but not statistically significant, suggesting that renewables may not yet play a major role in reducing emissions, possibly due to their smaller share in the energy mix or concurrent growth in energy demand. These findings underscore the importance of national context in shaping the emissions impact of renewable energy development.
+Results: 
+-   Colombia: It is predicted 0.03921 metric tons per capita CO₂ emissions will increase for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 9, and the F-statistic is 3.319. However, the p-value is 0.1018, suggesting this result is statistically insignificant. The adjusted R-squared is 0.1883, it suggests 18.83% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
+-   China: It is predicted 0.21525 metric tons per capita CO₂ emissions will increase for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 9, and the F-statistic is 6.583. The p-value is 0.0304 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.3583, it suggests 35.83% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
+-   The U.S.: It is predicted 1.0615 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 9, and the F-statistic is 86.46. The p-value is 6.534e-06 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.8952, it suggests 89.52% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
+-  Germany: It is predicted 0.33480 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 9, and the F-statistic is 58.95 The p-value is 3.069e-05 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.8528, it suggests 85.28% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
+-  All four countries: It is predicted 0.51838 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 42, and the F-statistic is 132.1 The p-value is 1.508e-14 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.7529, it suggests 75.29% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
+Analysis:
+The linear regression results suggest varying impacts of renewable energy adoption on CO₂ emissions across countries. In the United States and Germany, there is a strong and statistically significant negative relationship between the renewable energy index and CO₂ emissions, indicating that increased renewable energy usage has contributed meaningfully to emissions reductions. Specifically, renewable energy explains over 90% of the variation in CO₂ emissions in the U.S. and 87% in Germany, highlighting effective decarbonization strategies. In contrast, China's regression shows a significant but positive relationship, implying that despite expanding renewables, CO₂ emissions have continued to rise, likely due to sustained industrial growth and fossil fuel reliance. For Colombia, the relationship is positive but not statistically significant, suggesting that renewables may not yet play a major role in reducing emissions, possibly due to their smaller share in the energy mix or concurrent growth in energy demand. These findings underscore the importance of national context in shaping the emissions impact of renewable energy development. However, across all four countries, the linear regression still indicates a statistically significant relationship between renewable energy adoption and CO₂ emissions.
 
 Scatterplot with Regression Line
 ```{r RQ2.2, echo=FALSE}
-# Merge CO2 and Renewable data for each country
-merged_data <- merge(CO2, Renew, by = c("Country Code", "Year"), suffixes = c("_CO2", "_Renew"))
-
 # Scatterplot with regression line
 ggplot(merged_data, aes(x = Value_Renew, y = Value_CO2, color = `Country Code`)) +
   geom_point(size = 3, alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +  # Add regression line
   labs(
-    title = "Renewable Energy Adoption vs. CO₂ Emissions (2000-2020)",
+    title = "Renewable Energy Adoption vs. CO2 Emissions (2000-2020)",
     x = "Renewable Energy (% of Total Consumption)",
-    y = "CO₂ Emissions (Metric Tons per Capita)",
+    y = "CO2 Emissions (Metric Tons per Capita)",
     color = "Country"
   ) +
   theme_minimal() +
@@ -440,7 +450,7 @@ ggplot(PM, aes(x = Year, y = Value, group = `Country Code`, color = `Country Cod
   labs(title = "Cross Country Comparison of PM2.5 Air Pollution", 
        x = "Year", y = "PM2.5 (µg/m³)") +
   geom_text(
-    data = PM[c(max_value_Renew, min_value_Renew), ],
+    data = PM[c(max_index, min_index), ],
     aes(label = Value),  # Now shows 2 decimal places
     vjust = -0.5, hjust = 0.8, size = 4,
     nudge_x = 0.1, nudge_y = 0.1
