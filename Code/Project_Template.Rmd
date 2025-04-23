@@ -99,7 +99,9 @@ To guide our analysis, we propose the following research questions:
 
 2) Are there observable correlations between CO₂ emissions and PM2.5 pollution exposure? 
 
-3) Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges? 
+3) Which factor better predicts changes in CO₂ emissions: renewable energy consumption, exposure to PM2.5 pollution, or a combination of both?
+
+4) Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges? 
 
 
 \newpage
@@ -228,7 +230,7 @@ CO2_normalized_graph <- ggplot(CO2_normalized, aes(x = Year, y = Normalized, col
   scale_color_manual(values = c("CHN" = "red", "COL" = "darkgreen", 
                                 "DEU" = "turquoise", "USA" = "purple"),
                      labels = c("China", "Colombia", "Germany", "USA")) +
-  labs(title = "Normalized CO₂ Emissions  (2010 = 1.0)", 
+  labs(title = "Normalized CO2 Emissions  (2010 = 1.0)", 
        y = "Relative to 2010 Levels") +
   theme_minimal() +
   theme(legend.position = "bottom")
@@ -440,11 +442,11 @@ print(summary_table_Q1)
 
 ```
 Results: 
--   Colombia: It is predicted 0.03921 metric tons per capita CO₂ emissions will increase for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 9, and the F-statistic is 3.319. However, the p-value is 0.1018, suggesting this result is statistically insignificant. The adjusted R-squared is 0.1883, it suggests 18.83% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
--   China: It is predicted 0.21525 metric tons per capita CO₂ emissions will increase for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 9, and the F-statistic is 6.583. The p-value is 0.0304 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.3583, it suggests 35.83% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
--   The U.S.: It is predicted 1.0615 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 9, and the F-statistic is 86.46. The p-value is 6.534e-06 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.8952, it suggests 89.52% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
--  Germany: It is predicted 0.33480 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 9, and the F-statistic is 58.95 The p-value is 3.069e-05 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.8528, it suggests 85.28% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
--  All four countries: It is predicted 0.51838 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 42, and the F-statistic is 132.1 The p-value is 1.508e-14 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.7529, it suggests 75.29% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
+-   Colombia: It is predicted 0.03921 metric tons per capita CO₂ emissions will increase for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 9, F = 3.319., p = 0.1018). The p-value is 0.1018, suggesting this result is statistically insignificant. The adjusted R-squared is 0.1883, it suggests 18.83% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
+-   China: It is predicted 0.21525 metric tons per capita CO₂ emissions will increase for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 9, F = 6.583., p = 0.0304). The p-value is 0.0304 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.3583, it suggests 35.83% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
+-   The U.S.: It is predicted 1.0615 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 9, F = 86.46., p = 6.534e-06). The p-value is 6.534e-06 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.8952, it suggests 89.52% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
+-  Germany: It is predicted 0.33480 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 9, F = 58.95, p = 3.069e-05). The p-value is 3.069e-05 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.8528, it suggests 85.28% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
+-  All four countries: It is predicted 0.51838 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 42, F = 132.1, p = 1.508e-14). The p-value is 1.508e-14 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.7529, it suggests 75.29% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
 Analysis:
 The linear regression results suggest varying impacts of renewable energy adoption on CO₂ emissions across countries. In the United States and Germany, there is a strong and statistically significant negative relationship between the renewable energy index and CO₂ emissions, indicating that increased renewable energy usage has contributed meaningfully to emissions reductions. Specifically, renewable energy explains over 90% of the variation in CO₂ emissions in the U.S. and 87% in Germany, highlighting effective decarbonization strategies. In contrast, China's regression shows a significant but positive relationship, implying that despite expanding renewables, CO₂ emissions have continued to rise, likely due to sustained industrial growth and fossil fuel reliance. For Colombia, the relationship is positive but not statistically significant, suggesting that renewables may not yet play a major role in reducing emissions, possibly due to their smaller share in the energy mix or concurrent growth in energy demand. These findings underscore the importance of national context in shaping the emissions impact of renewable energy development. However, across all four countries, the linear regression analysis reveals a statistically significant negative relationship between the adoption of renewable energy and CO₂ emissions. 
 
@@ -566,11 +568,11 @@ summary_table_Q2 <- summary_table_Q2[, c("Country", "Coefficient", "Direction", 
 print(summary_table_Q2)
 ```
 Results: 
--   Colombia: It is predicted 4.395 metric tons per capita CO₂ emissions will decrease for every 1 µg/m³ mean annual PM2.5 pollution exposure. The degree of freedom is 8, and the F-statistic is 1.002. However, the p-value is 0.3462, suggesting this result is statistically insignificant. The adjusted R-squared is 0.0002086, it suggests 0.02% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure. 
--   China: It is predicted 3.105 metric tons per capita CO₂ emissions will decrease for every 1 µg/m³ mean annual PM2.5 pollution exposure. The degree of freedom is 8, and the F-statistic is 0.3823. The p-value is 0.5536, suggesting this result is statistically insignificant. The adjusted R-squared is -0.0737.
--   The U.S.: It is predicted 0.7136 metric tons per capita CO₂ emissions will increase for every 1 µg/m³ mean annual PM2.5 pollution exposure. The degree of freedom is 8, and the F-statistic is 33.06. The p-value is 0.0004293 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.7808, it suggests 78.08% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure. 
--  Germany: It is predicted 2.0180 metric tons per capita CO₂ emissions will increase for every 1 µg/m³ mean annual PM2.5 pollution exposure. The degree of freedom is 8, and the F-statistic is 5.437. The p-value is 0.04803 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.3302, it suggests 33.02% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure. 
--  All four countries: It is predicted 1.5174 metric tons per capita CO₂ emissions will decrease for every 1 µg/m³ mean annual PM2.5 pollution exposure. The degree of freedom is 38, and the F-statistic is 8.134 The p-value is 0.00699 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.1546, it suggests 15.46% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure. 
+-   Colombia: It is predicted 4.395 metric tons per capita CO₂ emissions will decrease for every 1 µg/m³ mean annual PM2.5 pollution exposure increase (df = 8, F = 1.002., p = 0.3462). The p-value is 0.3462, suggesting this result is statistically insignificant. The adjusted R-squared is 0.0002086, it suggests 0.02% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure. 
+-   China: It is predicted 3.105 metric tons per capita CO₂ emissions will decrease for every 1 µg/m³ mean annual PM2.5 pollution exposure increase (df = 8, F = 0.3823., p = 0.5536). The p-value is 0.5536, suggesting this result is statistically insignificant. The adjusted R-squared is -0.0737.
+-   The U.S.: It is predicted 0.7136 metric tons per capita CO₂ emissions will increase for every 1 µg/m³ mean annual PM2.5 pollution exposure increase (df = 8, F = 33.06., p = 0.0004293).  The p-value is 0.0004293 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.7808, it suggests 78.08% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure. 
+-  Germany: It is predicted 2.0180 metric tons per capita CO₂ emissions will increase for every 1 µg/m³ mean annual PM2.5 pollution exposure increase (df = 8, F = 5.437., p = 0.04803). The p-value is 0.04803 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.3302, it suggests 33.02% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure. 
+-  All four countries: It is predicted 1.5174 metric tons per capita CO₂ emissions will decrease for every 1 µg/m³ mean annual PM2.5 pollution exposure increase (df = 38, F = 8.134, p = 0.00699). The p-value is 0.00699 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.1546, it suggests 15.46% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure. 
 
 The second set of linear regression models investigates the relationship between PM2.5 concentrations and CO₂ emissions in each country and all four countries. Across all four countries, the linear regression analysis reveals a statistically significant negative relationship between the PM2.5 pollution exposure and CO₂ emissions, suggesting that higher CO2 emissions are associated with lower PM2.5 concentrations, which might reflect the influence of decarbonization technologies or cleaner combustion. For the USA and Germany, both coefficients are positive and statistically significant, indicating that higher CO₂ emissions are associated with increased PM2.5 levels. However, the results for Colombia and China are not statistically significant, with p-values above 0.3 and very low R-squared values, implying little explanatory power of CO₂ emissions on PM2.5 in these contexts. Overall, the findings underscore heterogeneous national dynamics, possibly driven by differing energy sources, pollution control technologies, and industrial policies. 
 
@@ -594,8 +596,153 @@ ggplot(merged_pm_data, aes(x = Value_CO2, y = Value_PM, color = `Country Code`))
 Looking at the scatter plot of CO₂ emissions versus PM2.5 pollution exposure from 2010-2020 across China, Colombia, Germany, and the USA reveals complex relationships between these environmental indicators. While the overall cross-country comparison shows a counterintuitive pattern—with higher-emission countries like the USA having lower PM2.5 levels than lower-emission countries like China and Colombia—there are notable within-country correlations for developed economies. As observed in the data points for Germany and the USA, there appears to be a positive correlation where years with higher carbon emissions tend to correspond with higher particulate pollution levels. This suggests that while economic development stage and environmental regulation may disconnect these measures globally, within similar economic systems, both types of emissions may share common drivers or respond to similar policy interventions. The USA exhibits the clearest positive correlation, with PM2.5 concentrations increasing alongside rising per capita CO₂ emissions, indicating that domestic pollution control efforts need to address both greenhouse gases and particulate matter simultaneously. This nuanced relationship highlights the importance of considering both global patterns and country-specific trends when developing environmental policies.
 
 
+## Question 3:Which factor better predicts changes in CO₂ emissions: renewable energy consumption, exposure to PM2.5 pollution, or a combination of both?
+```{r RQ3, include=FALSE}
+#Overall: 
+#Merging the dataset
+merged_Multiple <- left_join(merged_data, merged_pm_data, by = c("Country Code", "Year", "Country Name_CO2", "Series Name_CO2", "Value_CO2"))
 
-## Question 3: Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges?
+#Running an AIC to determine what set of explanatory variables is best suited to predict changes in CO₂ emissions
+CO2.AIC <- lm(data = merged_Multiple, Value_CO2 ~ Value_Renew + Value_PM)
+step (CO2.AIC)
+
+#Running a multiple regression on both renewable energy consumption and exposure to PM2.5 pollution
+CO2.Mul.Reg <- lm(data = merged_Multiple, Value_CO2 ~ Value_Renew + Value_PM)
+summary(CO2.Mul.Reg)
+
+
+```
+```{r echo=FALSE}
+#Converting the AIC test results into a table
+AIC_ALL <- data.frame(
+  AIC = c(30.722, 78.688, 126.144))
+
+rownames(AIC_ALL) <- c("All", "Exclude Value_PM", "Exclude Value_Renew")
+print (AIC_ALL)
+```
+
+
+Since the smaller the AIC value, the better.  Across all four countries, the model that includes both renewable energy consumption and the exposure to PM2.5 pollution can better explain the changes in CO₂ emissions. By running a multiple regression, it is predicted 0.11720 metric tons per capita CO₂ emissions will decrease for every 1 µg/m³ mean annual PM2.5 pollution exposure increase, and it is predicted 0.52076 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 37, F = 238, p = < 2.2e-16).  The p-value is < 2.2e-16 and less than 0.05, suggesting this model is statistically significant. The adjusted R-squared is 0.924, it suggests 92.4% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure and renewable energy consumption. 
+
+
+```{r include=FALSE}
+#Colombia
+#Merging the dataset
+merged_COL_Step1 <- left_join(PM_COL, Renew_COL, by = c("Country Code", "Year", "Country Name"))
+merged_COL <- left_join(merged_COL_Step1, CO2_COL, by = c("Country Code", "Year", "Country Name"))
+colnames(merged_COL) <- c("Country Name", "Country Code", "PM Indicator", "Year", "Value_PM", "Renew Indicator", "Value_Renew", "CO2 Indicator", "Value_CO2")
+#Dropping N/A for the AIC test
+merged_COL <- na.omit(merged_COL)
+
+#Running an AIC to determine what set of explanatory variables is best suited to predict changes in CO₂ emissions
+CO2.COL.AIC <- lm(data = merged_COL, Value_CO2 ~ Value_Renew + Value_PM)
+step (CO2.COL.AIC)
+
+
+```
+```{r echo=FALSE}
+#Converting the AIC test results into a table
+AIC_COL <- data.frame(
+  AIC = c(-44.336, -46.282, -43.798))
+
+rownames(AIC_COL) <- c("All", "Exclude Value_PM", "Exclude Value_Renew")
+print (AIC_COL)
+```
+
+
+In Colombia, the model that includes only renewable energy consumption yields the lowest AIC result. Therefore, a multiple regression analysis is not conducted.
+
+
+```{r include=FALSE}
+#China
+#Merging the dataset
+merged_CHN_Step1 <- left_join(PM_CHN, Renew_CHN, by = c("Country Code", "Year", "Country Name"))
+merged_CHN <- left_join(merged_CHN_Step1, CO2_CHN, by = c("Country Code", "Year", "Country Name"))
+colnames(merged_CHN) <- c("Country Name", "Country Code", "PM Indicator", "Year", "Value_PM", "Renew Indicator", "Value_Renew", "CO2 Indicator", "Value_CO2")
+#Dropping N/A for the AIC test
+merged_CHN <- na.omit(merged_CHN)
+
+
+#Running an AIC to determine what set of explanatory variables is best suited to predict changes in CO₂ emissions
+CO2.CHN.AIC <- lm(data = merged_CHN, Value_CO2 ~ Value_Renew + Value_PM)
+step (CO2.CHN.AIC)
+
+#Running a multiple regression on both renewable energy consumption and exposure to PM2.5 pollution
+CO2.CHN.Reg <- lm(data = merged_CHN, Value_CO2 ~ Value_Renew + Value_PM)
+summary(CO2.CHN.Reg)
+
+```
+```{r echo=FALSE}
+#Converting the AIC test results into a table
+AIC_CHN <- data.frame(
+  AIC = c(--26.221, -20.483, -17.762))
+
+rownames(AIC_CHN) <- c("All", "Exclude Value_PM", "Exclude Value_Renew")
+print (AIC_CHN)
+```
+
+In China, the model that includes both renewable energy consumption and the exposure to PM2.5 pollution can better explain the changes in CO₂ emissions. By running a multiple regression, it is predicted 0.10314 metric tons per capita CO₂ emissions will increase for every 1 µg/m³ mean annual PM2.5 pollution exposure increase, and it is predicted 0.69779 metric tons per capita CO₂ emissions will increase for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 7, F = 6.937, p = 0.02184).  The p-value is 0.02184 and less than 0.05, suggesting this model is statistically significant. The adjusted R-squared is 0.5689, it suggests 56.89% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure and renewable energy consumption. 
+
+
+
+```{r include=FALSE}
+#USA
+#Merging the dataset
+merged_USA_Step1 <- left_join(PM_USA, Renew_USA, by = c("Country Code", "Year", "Country Name"))
+merged_USA <- left_join(merged_USA_Step1, CO2_USA, by = c("Country Code", "Year", "Country Name"))
+colnames(merged_USA) <- c("Country Name", "Country Code", "PM Indicator", "Year", "Value_PM", "Renew Indicator", "Value_Renew", "CO2 Indicator", "Value_CO2")
+#Dropping N/A for the AIC test
+merged_USA <- na.omit(merged_USA)
+
+
+#Running an AIC to determine what set of explanatory variables is best suited to predict changes in CO₂ emissions
+CO2.USA.AIC <- lm(data = merged_USA, Value_CO2 ~ Value_Renew + Value_PM)
+step (CO2.USA.AIC)
+
+#Running a multiple regression on both renewable energy consumption and exposure to PM2.5 pollution
+CO2.USA.Reg <- lm(data = merged_USA, Value_CO2 ~ Value_Renew + Value_PM)
+summary(CO2.USA.Reg)
+```
+```{r echo=FALSE}
+#Converting the AIC test results into a table
+AIC_USA <- data.frame(
+  AIC = c(-22.954, -22.077, -16.715))
+
+rownames(AIC_USA) <- c("All", "Exclude Value_PM", "Exclude Value_Renew")
+print (AIC_USA)
+```
+In the United States, the model that includes both renewable energy consumption and the exposure to PM2.5 pollution can better explain the changes in CO₂ emissions. By running a multiple regression, it is predicted 0.4195  metric tons per capita CO₂ emissions will increase for every 1 µg/m³ mean annual PM2.5 pollution exposure increase, and it is predicted 0.6289 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 7, F = 37.44, p = 0.0001826).  The p-value is 0.0001826 and less than 0.05, suggesting this model is statistically significant. The adjusted R-squared is 0.8901, it suggests 89.01% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure and renewable energy consumption. 
+
+
+```{r include=FALSE}
+#Germany
+#Merging the dataset
+merged_DEU_Step1 <- left_join(PM_DEU, Renew_DEU, by = c("Country Code", "Year", "Country Name"))
+merged_DEU <- left_join(merged_DEU_Step1, CO2_DEU, by = c("Country Code", "Year", "Country Name"))
+colnames(merged_DEU) <- c("Country Name", "Country Code", "PM Indicator", "Year", "Value_PM", "Renew Indicator", "Value_Renew", "CO2 Indicator", "Value_CO2")
+#Dropping N/A for the AIC test
+merged_DEU <- na.omit(merged_DEU)
+
+
+#Running an AIC to determine what set of explanatory variables is best suited to predict changes in CO₂ emissions
+CO2.DEU.AIC <- lm(data = merged_DEU, Value_CO2 ~ Value_Renew + Value_PM)
+step (CO2.DEU.AIC)
+
+#Running a multiple regression on both renewable energy consumption and exposure to PM2.5 pollution
+CO2.DEU.Reg <- lm(data = merged_DEU, Value_CO2 ~ Value_Renew + Value_PM)
+summary(CO2.DEU.Reg)
+```
+```{r echo=FALSE}
+#Converting the AIC test results into a table
+AIC_DEU <- data.frame(
+  AIC = c(-26.587, -25.725, -15.977))
+
+rownames(AIC_DEU) <- c("All", "Exclude Value_PM", "Exclude Value_Renew")
+print (AIC_DEU)
+```
+In Germany, the model that includes both renewable energy consumption and the exposure to PM2.5 pollution can better explain the changes in CO₂ emissions. By running a multiple regression, it is predicted 0.14587  metric tons per capita CO₂ emissions will decrease for every 1 µg/m³ mean annual PM2.5 pollution exposure increase, and it is predicted 0.40331 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption (df = 7, F = 17.25, p = 0.001972).  The p-value is 0.001972 and less than 0.05, suggesting this model is statistically significant. The adjusted R-squared is 0.7831, it suggests 78.31% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure and renewable energy consumption. 
+
+## Question 4: Which countries demonstrate best practices or policy approaches that may serve as models for others in addressing these environmental challenges?
 
 The analysis reveals distinct yet complementary policy approaches that countries can emulate to address interconnected environmental challenges. Colombia stands out as a renewable energy leader, achieving 32% renewable energy consumption through strategic harnessing of its natural resources. The country's success stems from innovative policies like the Energy Transition Law, which created tax incentives for renewable projects, and robust public-private partnerships exemplified by Ecopetrol's investments. Colombia's National Energy Plan demonstrates how developing nations can leverage geographic advantages - in this case, hydropower and bioenergy resources - to build sustainable energy systems. The planned expansion into wind and solar energy through competitive auctions in the Guajira region offers a replicable model for resource-rich developing countries.
 
