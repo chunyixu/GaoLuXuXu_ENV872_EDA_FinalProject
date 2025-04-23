@@ -19,7 +19,7 @@ Ruoran Xu, Master of Environmental Management student at Duke University, rx60@d
 
 ## Database Information
 
-<The dataset was collected from the World Bank Databank, specifically the World Development Indicators. This is a comprehensive and reliable database compiled from officially recognized international sources. The date of access is #####.>
+<The dataset was collected from the World Bank Databank, specifically the World Development Indicators. This is a comprehensive and reliable database compiled from officially recognized international sources. The date of access is April 3, 2025.>
 
 
 ## Folder structure, file formats, and naming conventions 
@@ -34,16 +34,40 @@ Files are named according to the following naming convention:
 
 **Datadescription** is a description of data 
 
-**Stage**refers to the stage in data management pipelines (e.g., raw, cleaned, or processed)
+**Stage** refers to the stage in data management pipelines (e.g., raw, cleaned, or processed)
 
-**format** is a non-proprietary file format (e.g., .csv, .txt)>
+**Format** is a non-proprietary file format (e.g., .csv, .txt)>
 
 
 ## Metadata
-
 <For each data file in the repository, describe the data contained in each column. Include the column name, a description of the information, the class of data, and any units associated with the data. Create a list or table for each data file.> 
 
+**Main Processed Dataset (`Sus_Env_Processed.xlsx`):**
+
+| Column Name    | Description                                      | Data Type | Unit                                  |
+|----------------|--------------------------------------------------|-----------|---------------------------------------|
+| Country Name   | Full name of the country                         | Character | –                                     |
+| Country Code   | ISO 3-letter code                                | Character | –                                     |
+| Series Name    | Indicator (CO2, PM, Renew)                       | Character | –                                     |
+| Year           | Year of observation                              | Integer   | Year                                  |
+| Value          | Measured value of the indicator                  | Numeric   | Varies by Series (see below)          |
+
+**Units by Series:**
+- `CO2`: Metric tons per capita
+- `Renew`: % of total final energy consumption
+- `PM`: µg/m³ (micrograms per cubic meter)
+
 ## Scripts and code
-
 <R scripts are leveraged in the repository for data wrangling, data exploration, data visualization, and data analysis.>
+All R scripts used for data handling and analysis are stored in the `/code/` directory. These scripts use the following packages:
 
+- `tidyverse`, `readxl`, `writexl` for data import and cleaning
+- `ggplot2` for data visualization
+- `dplyr` and `lubridate` for data transformation
+- `knitr` for formatted output and table rendering
+
+**Script Purposes:**
+- Data Wrangling: Cleaning raw WDI Excel files and reshaping to tidy format
+- Exploratory Analysis: Generating summary statistics and trends
+- Statistical Modeling: Running correlation tests, linear regressions, and AIC model comparisons
+- Visualization: Producing line plots, scatterplots, and regression visuals for CO₂, PM2.5, and renewables
