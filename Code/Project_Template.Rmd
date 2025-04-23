@@ -218,7 +218,7 @@ knitr::kable(Summary_Stats_PM, caption = "Summary Statistics for PM2.5 Pollution
 
 The exploratory analysis of CO2 emissions, renewable energy usage, and PM2.5 exposure data involved initial visualizations of each indicator across four countries (United States, Germany, China, and Colombia) from 2010-2020. After preliminary graphs revealed scaling challenges due to wide variations between nations, the y-axis was adjusted to better display trends while preserving comparisons. Examining differences in each indicator's levels, trajectories, and volatility helped identify potential patterns worthy of deeper investigation in subsequent analysis. In this way, this section could examine how CO2 emissions, renewable energy usage, and PM2.5 exposure have evolved from 2010 to 2020 in Germany, the United States, China, and Colombia. 
 
-```{r normalized.CO2 Emissions.country, echo=FALSE, message=FALSE, warning=FALSE}
+```{r normalized.CO2 Emissions.country, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Normalized CO2 Emissions  (2010 = 1.0)"}
 knitr::opts_chunk$set(echo = TRUE)
 # Normalized to 2010 values for comparison
 CO2_normalized <- CO2 %>%
@@ -247,7 +247,7 @@ This normalized graph highlights that while absolute emissions varied greatly, t
 -   Germany showed a moderate decline (-23%)
 
 
-```{r normalized.Renewable Energy Consumption.country, echo=FALSE, message=FALSE, warning=FALSE}
+```{r normalized.Renewable Energy Consumption.country, echo=FALSE, message=FALSE, warning=FALSE,, fig.cap="Normalized Renewable Energy Consumption (2010 = 1.0)"}
 # Normalized to 2010 values for comparison
 Renew_normalized <- Renew %>%
   group_by(`Country Code`) %>%
@@ -274,7 +274,7 @@ This normalized graph highlights that while absolute renewable energy consumptio
 -   Colombia remained stable (+0.06%)
 
 
-```{r normalized.PM2.5 Pollution Exposure.country, echo=FALSE, message=FALSE, warning=FALSE}
+```{r normalized.PM2.5 Pollution Exposure.country, echo=FALSE, message=FALSE, warning=FALSE,"Normalized PM2.5 Pollution Exposure (2010 = 1.0)" }
 # Normalized to 2010 values for comparison
 PM_normalized <- PM %>%
   group_by(`Country Code`) %>%
@@ -307,7 +307,7 @@ These preliminary visualizations suggest fundamentally different CO2 emissions, 
 
 # Analysis
 ## Question 1: What is the relationship between renewable energy adoption and CO2 emissions across countries and over time?
-```{r RQ1.1, echo=FALSE, message=FALSE, warning=FALSE}
+```{r RQ1.1, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Cross Country Comparison of Renewable Energy Trends"}
 knitr::opts_chunk$set(echo = TRUE)
 ##Creating separate datasets regarding each variable of interest across four countries
 ###PM
@@ -456,7 +456,7 @@ Analysis:
 The linear regression results suggest varying impacts of renewable energy adoption on CO2 emissions across countries. In the United States and Germany, there is a strong and statistically significant negative relationship between the renewable energy index and CO2 emissions, indicating that increased renewable energy usage has contributed meaningfully to emissions reductions. Specifically, renewable energy explains over 90% of the variation in CO2 emissions in the U.S. and 87% in Germany, highlighting effective decarbonization strategies. In contrast, China's regression shows a significant but positive relationship, implying that despite expanding renewables, CO2 emissions have continued to rise, likely due to sustained industrial growth and fossil fuel reliance. For Colombia, the relationship is positive but not statistically significant, suggesting that renewables may not yet play a major role in reducing emissions, possibly due to their smaller share in the energy mix or concurrent growth in energy demand. These findings underscore the importance of national context in shaping the emissions impact of renewable energy development. However, across all four countries, the linear regression analysis reveals a statistically significant negative relationship between the adoption of renewable energy and CO2 emissions. 
 
 Scatterplot with Regression Line
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Renewable Energy Adoption vs. CO2 Emissions (2010-2020)"}
 # Scatterplot with regression line
 ggplot(merged_data, aes(x = Value_Renew, y = Value_CO2, color = `Country Code`)) +
   geom_point(size = 3, alpha = 0.7) +
@@ -475,7 +475,7 @@ Based on the graph showing renewable energy adoption versus CO2 emissions across
 
 ## Question 2: Are there observable correlations between CO2 emissions and PM2.5 pollution exposure?
 
-```{r RQ2.1, echo=FALSE, message=FALSE, warning=FALSE}
+```{r RQ2.1, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Cross Country Comparison of PM2.5 Air Pollution"}
 # Round Value values to 2 decimal places
 PM$Value <- round(PM$Value, 2)
 
@@ -615,7 +615,7 @@ Results:
 The second set of linear regression models investigates the relationship between PM2.5 concentrations and CO2 emissions in each country and all four countries. Across all four countries, the linear regression analysis reveals a statistically significant negative relationship between the PM2.5 pollution exposure and CO2 emissions, suggesting that higher CO2 emissions are associated with lower PM2.5 concentrations, which might reflect the influence of decarbonization technologies or cleaner combustion. For the USA and Germany, both coefficients are positive and statistically significant, indicating that higher CO2 emissions are associated with increased PM2.5 levels. However, the results for Colombia and China are not statistically significant, with p-values above 0.3 and very low R-squared values, implying little explanatory power of CO2 emissions on PM2.5 in these contexts. Overall, the findings underscore heterogeneous national dynamics, possibly driven by differing energy sources, pollution control technologies, and industrial policies. 
 
 *Scatterplot with Regression Line
-```{r RQ2.4, echo=FALSE}
+```{r RQ2.4, echo=FALSE, message=FALSE, warning=FALSE,fig.cap="CO2 Emissions vs. PM2.5 Pollution Exposure (2010-2020)"}
 # Scatterplot
 ggplot(merged_pm_data, aes(x = Value_CO2, y = Value_PM, color = `Country Code`)) +
   geom_point(size = 3, alpha = 0.7) +
