@@ -58,7 +58,7 @@ Files are named according to the following naming convention:
 - `PM`: µg/m³ (micrograms per cubic meter)
 
 ## Scripts and code
-All R scripts used for data handling and analysis are stored in the `/code/` directory. These scripts use the following packages:
+All R scripts used for data handling and analysis are stored in the Code file. These scripts use the following packages:
 
 - `tidyverse`, `readxl`, `writexl` for data import and cleaning
 - `ggplot2` for data visualization
