@@ -389,13 +389,13 @@ The correlation analysis reveals no universal relationship between renewable ene
 
 The Linear Regression Analysis
 ```{r RQ1.3, echo=FALSE}
-# Linear regression for each country: CO2 as a function of Renewables
+# Linear regression for each country: CO₂ as a function of Renewables
 model_COL_Q1 <- lm(CO2_COL$Value ~ Renew_COL$Value)
 model_CHN_Q1 <- lm(CO2_CHN$Value ~ Renew_CHN$Value)
 model_USA_Q1 <- lm(CO2_USA$Value ~ Renew_USA$Value)
 model_DEU_Q1 <- lm(CO2_DEU$Value ~ Renew_DEU$Value)
 
-#Linear regression for four countries: CO2 as a function of Renewables
+#Linear regression for four countries: CO₂ as a function of Renewables
 # Merge CO2 and Renewable data for each country
 merged_data <- merge(CO2, Renew, by = c("Country Code", "Year"), suffixes = c("_CO2", "_Renew"))
 model_All_Q1 <- lm(merged_data$Value_CO2 ~ merged_data$Value_Renew)
@@ -407,6 +407,37 @@ summary(model_USA_Q1)
 summary(model_DEU_Q1)
 summary(model_All_Q1)
 
+
+# Create a summary table for Renew ~ CO₂ regressions
+summary_table_Q1 <- data.frame(
+  Country = c("Colombia", "China", "USA", "Germany", "Overall"),
+  Coefficient = c(coef(model_COL_Q1)[2], coef(model_CHN_Q1)[2], coef(model_USA_Q1)[2], coef(model_DEU_Q1)[2],coef(model_All_Q1)[2]),
+  p_value = c(summary(model_COL_Q1)$coefficients[2,4],
+              summary(model_CHN_Q1)$coefficients[2,4],
+              summary(model_USA_Q1)$coefficients[2,4],
+              summary(model_DEU_Q1)$coefficients[2,4],
+              summary(model_All_Q1)$coefficients[2,4]),
+  R_squared = c(summary(model_COL_Q1)$r.squared,
+                summary(model_CHN_Q1)$r.squared,
+                summary(model_USA_Q1)$r.squared,
+                summary(model_DEU_Q1)$r.squared,
+                summary(model_All_Q1)$r.squared)
+)
+
+# Add direction and significance flags
+summary_table_Q1$Direction <- ifelse(summary_table_Q1$Coefficient > 0, "↑", "↓")
+summary_table_Q1$Significant <- ifelse(summary_table_Q1$p_value < 0.05, "Yes", "No")
+
+# Round values for cleaner display
+summary_table_Q1$Coefficient <- round(summary_table_Q1$Coefficient, 3)
+summary_table_Q1$p_value <- signif(summary_table_Q1$p_value, 3)
+summary_table_Q1$R_squared <- round(summary_table_Q1$R_squared, 2)
+
+# Reorder and print
+summary_table_Q1 <- summary_table_Q1[, c("Country", "Coefficient", "Direction", "p_value", "Significant", "R_squared")]
+print(summary_table_Q1)
+
+
 ```
 Results: 
 -   Colombia: It is predicted 0.03921 metric tons per capita CO₂ emissions will increase for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 9, and the F-statistic is 3.319. However, the p-value is 0.1018, suggesting this result is statistically insignificant. The adjusted R-squared is 0.1883, it suggests 18.83% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
@@ -415,7 +446,7 @@ Results:
 -  Germany: It is predicted 0.33480 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 9, and the F-statistic is 58.95 The p-value is 3.069e-05 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.8528, it suggests 85.28% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
 -  All four countries: It is predicted 0.51838 metric tons per capita CO₂ emissions will decrease for every 1% increase in the percentage of renewable energy consumption of total final energy consumption. The degree of freedom is 42, and the F-statistic is 132.1 The p-value is 1.508e-14 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.7529, it suggests 75.29% of the variability in CO₂ emissions is explained by changes in renewable energy consumption. 
 Analysis:
-The linear regression results suggest varying impacts of renewable energy adoption on CO₂ emissions across countries. In the United States and Germany, there is a strong and statistically significant negative relationship between the renewable energy index and CO₂ emissions, indicating that increased renewable energy usage has contributed meaningfully to emissions reductions. Specifically, renewable energy explains over 90% of the variation in CO₂ emissions in the U.S. and 87% in Germany, highlighting effective decarbonization strategies. In contrast, China's regression shows a significant but positive relationship, implying that despite expanding renewables, CO₂ emissions have continued to rise, likely due to sustained industrial growth and fossil fuel reliance. For Colombia, the relationship is positive but not statistically significant, suggesting that renewables may not yet play a major role in reducing emissions, possibly due to their smaller share in the energy mix or concurrent growth in energy demand. These findings underscore the importance of national context in shaping the emissions impact of renewable energy development. However, across all four countries, the linear regression still indicates a statistically significant relationship between renewable energy adoption and CO₂ emissions.
+The linear regression results suggest varying impacts of renewable energy adoption on CO₂ emissions across countries. In the United States and Germany, there is a strong and statistically significant negative relationship between the renewable energy index and CO₂ emissions, indicating that increased renewable energy usage has contributed meaningfully to emissions reductions. Specifically, renewable energy explains over 90% of the variation in CO₂ emissions in the U.S. and 87% in Germany, highlighting effective decarbonization strategies. In contrast, China's regression shows a significant but positive relationship, implying that despite expanding renewables, CO₂ emissions have continued to rise, likely due to sustained industrial growth and fossil fuel reliance. For Colombia, the relationship is positive but not statistically significant, suggesting that renewables may not yet play a major role in reducing emissions, possibly due to their smaller share in the energy mix or concurrent growth in energy demand. These findings underscore the importance of national context in shaping the emissions impact of renewable energy development. However, across all four countries, the linear regression analysis reveals a statistically significant negative relationship between the adoption of renewable energy and CO₂ emissions. 
 
 Scatterplot with Regression Line
 ```{r RQ2.2, echo=FALSE}
@@ -466,7 +497,8 @@ Our cross-national comparison reveals pronounced disparities in exposure levels,
 
 These findings underscore the effectiveness of integrated policy approaches combining emission controls, energy infrastructure modernization, and urban planning interventions. The China-United States divergence particularly highlights the health benefits achievable through rigorous power plant emission standards, vehicle fleet renewal programs, and comprehensive air quality monitoring systems. Future research directions should prioritize quantitative health impact assessments using WHO-recommended methodologies, detailed source apportionment studies to identify sector-specific contributions, and longitudinal evaluations of intervention effectiveness, such as China's recent "Blue Sky" policy initiatives.
 
-```{r RQ2.2, echo=FALSE}
+The Correlation Analysis
+```{r RQ2.2, include=FALSE}
 # Calculate Pearson correlations (linear relationship strength):
 correlationPMCOL <- cor(CO2_COL$Value, PM_COL$Value, 
                      method = "pearson", use = "complete.obs")  # Colombia
@@ -482,7 +514,7 @@ print(correlationPMUSA)
 print(correlationPMDEU)
 
 ```
-While observable correlations exist, their strength and direction vary significantly by national context. This underscores the need for country-specific air quality management strategies that account for local emission source profiles and development pathways. The strong US correlation suggests co-control benefits from decarbonization, whereas China/Colombia's results indicate PM2.5 reduction may require additional targeted measures beyond CO₂ mitigation.
+While observable correlations exist, their strength and direction vary significantly by national context. This underscores the need for country-specific air quality management strategies that account for local emission source profiles and development pathways. The strong US correlation (0.90) and moderate Germany correlation (0.63) suggests co-control benefits from decarbonization, whereas China/Colombia's results (-0.21 and -0.33, respectively) indicate PM2.5 reduction may require additional targeted measures beyond CO₂ mitigation.
 
 *Linear Regression Analysis
 ```{r RQ2.3, echo=FALSE}
@@ -492,24 +524,32 @@ model_CHN_Q2 <- lm(PM_CHN$Value ~ CO2_CHN$Value)
 model_USA_Q2 <- lm(PM_USA$Value ~ CO2_USA$Value)
 model_DEU_Q2 <- lm(PM_DEU$Value ~ CO2_DEU$Value)
 
+# Linear regression for all four countries: PM2.5 as a function of CO2 emissions
+# Merge CO2 and PM2.5 data
+merged_pm_data <- merge(CO2, PM, by = c("Country Code", "Year"), suffixes = c("_CO2", "_PM"))
+model_ALL_Q2 <- lm(merged_pm_data$Value_PM ~ merged_pm_data$Value_CO2)
+
 # Summary to get p-values and R²
 summary(model_COL_Q2)
 summary(model_CHN_Q2)
 summary(model_USA_Q2)
 summary(model_DEU_Q2)
+summary(model_ALL_Q2)
 
 # Create a summary table for PM2.5 ~ CO2 regressions
 summary_table_Q2 <- data.frame(
-  Country = c("Colombia", "China", "USA", "Germany"),
-  Coefficient = c(coef(model_COL_Q2)[2], coef(model_CHN_Q2)[2], coef(model_USA_Q2)[2], coef(model_DEU_Q2)[2]),
+  Country = c("Colombia", "China", "USA", "Germany", "Overall"),
+  Coefficient = c(coef(model_COL_Q2)[2], coef(model_CHN_Q2)[2], coef(model_USA_Q2)[2], coef(model_DEU_Q2)[2],coef(model_ALL_Q2)[2]),
   p_value = c(summary(model_COL_Q2)$coefficients[2,4],
               summary(model_CHN_Q2)$coefficients[2,4],
               summary(model_USA_Q2)$coefficients[2,4],
-              summary(model_DEU_Q2)$coefficients[2,4]),
+              summary(model_DEU_Q2)$coefficients[2,4],
+              summary(model_ALL_Q2)$coefficients[2,4]),
   R_squared = c(summary(model_COL_Q2)$r.squared,
                 summary(model_CHN_Q2)$r.squared,
                 summary(model_USA_Q2)$r.squared,
-                summary(model_DEU_Q2)$r.squared)
+                summary(model_DEU_Q2)$r.squared,
+                summary(model_ALL_Q2)$r.squared)
 )
 
 # Add direction and significance flags
@@ -525,20 +565,24 @@ summary_table_Q2$R_squared <- round(summary_table_Q2$R_squared, 2)
 summary_table_Q2 <- summary_table_Q2[, c("Country", "Coefficient", "Direction", "p_value", "Significant", "R_squared")]
 print(summary_table_Q2)
 ```
-The second set of linear regression models investigates the relationship between PM2.5 concentrations and CO2 emissions in each country. The USA and Germany show statistically significant results, but in opposite directions. For the USA, the coefficient is positive and highly significant (p = 0.0004), indicating that higher CO2 emissions are associated with increased PM2.5 levels. In contrast, Germany exhibits a significant negative relationship (p = 0.048), suggesting that higher CO2 emissions are associated with lower PM2.5 concentrations, which might reflect the influence of decarbonization technologies or cleaner combustion. However, the results for Colombia and China are not statistically significant, with p-values above 0.3 and very low R-squared values, implying little explanatory power of CO2 emissions on PM2.5 in these contexts. Overall, the findings underscore heterogeneous national dynamics, possibly driven by differing energy sources, pollution control technologies, and industrial policies.
+Results: 
+-   Colombia: It is predicted 4.395 metric tons per capita CO₂ emissions will decrease for every 1 µg/m³ mean annual PM2.5 pollution exposure. The degree of freedom is 8, and the F-statistic is 1.002. However, the p-value is 0.3462, suggesting this result is statistically insignificant. The adjusted R-squared is 0.0002086, it suggests 0.02% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure. 
+-   China: It is predicted 3.105 metric tons per capita CO₂ emissions will decrease for every 1 µg/m³ mean annual PM2.5 pollution exposure. The degree of freedom is 8, and the F-statistic is 0.3823. The p-value is 0.5536, suggesting this result is statistically insignificant. The adjusted R-squared is -0.0737.
+-   The U.S.: It is predicted 0.7136 metric tons per capita CO₂ emissions will increase for every 1 µg/m³ mean annual PM2.5 pollution exposure. The degree of freedom is 8, and the F-statistic is 33.06. The p-value is 0.0004293 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.7808, it suggests 78.08% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure. 
+-  Germany: It is predicted 2.0180 metric tons per capita CO₂ emissions will increase for every 1 µg/m³ mean annual PM2.5 pollution exposure. The degree of freedom is 8, and the F-statistic is 5.437. The p-value is 0.04803 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.3302, it suggests 33.02% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure. 
+-  All four countries: It is predicted 1.5174 metric tons per capita CO₂ emissions will decrease for every 1 µg/m³ mean annual PM2.5 pollution exposure. The degree of freedom is 38, and the F-statistic is 8.134 The p-value is 0.00699 and less than 0.05, suggesting this result is statistically significant. The adjusted R-squared is 0.1546, it suggests 15.46% of the variability in CO₂ emissions is explained by changes in PM2.5 pollution exposure. 
+
+The second set of linear regression models investigates the relationship between PM2.5 concentrations and CO₂ emissions in each country and all four countries. Across all four countries, the linear regression analysis reveals a statistically significant negative relationship between the PM2.5 pollution exposure and CO₂ emissions, suggesting that higher CO2 emissions are associated with lower PM2.5 concentrations, which might reflect the influence of decarbonization technologies or cleaner combustion. For the USA and Germany, both coefficients are positive and statistically significant, indicating that higher CO₂ emissions are associated with increased PM2.5 levels. However, the results for Colombia and China are not statistically significant, with p-values above 0.3 and very low R-squared values, implying little explanatory power of CO₂ emissions on PM2.5 in these contexts. Overall, the findings underscore heterogeneous national dynamics, possibly driven by differing energy sources, pollution control technologies, and industrial policies. 
 
 *Scatterplot with Regression Line
 ```{r RQ2.2, echo=FALSE}
-# Merge CO2 and PM2.5 data
-merged_pm_data <- merge(CO2, PM, by = c("Country Code", "Year"), suffixes = c("_CO2", "_PM"))
-
 # Scatterplot
 ggplot(merged_pm_data, aes(x = Value_CO2, y = Value_PM, color = `Country Code`)) +
   geom_point(size = 3, alpha = 0.7) +
   geom_smooth(method = "lm", se = FALSE, linetype = "dashed") +
   labs(
-    title = "CO₂ Emissions vs. PM2.5 Pollution Exposure (2000-2020)",
-    x = "CO₂ Emissions (Metric Tons per Capita)",
+    title = "CO2 Emissions vs. PM2.5 Pollution Exposure (2010-2020)",
+    x = "CO2 Emissions (Metric Tons per Capita)",
     y = "PM2.5 Concentration (µg/m³)",
     color = "Country"
   ) +
@@ -547,8 +591,7 @@ ggplot(merged_pm_data, aes(x = Value_CO2, y = Value_PM, color = `Country Code`))
 
 ```
 
-Looking at the scatter plot of CO₂ emissions versus PM2.5 pollution exposure from 2000-2020 across China, Colombia, Germany, and the USA reveals complex relationships between these environmental indicators. While the overall cross-country comparison shows a counterintuitive pattern—with higher-emission countries like the USA having lower PM2.5 levels than lower-emission countries like China and Colombia—there are notable within-country correlations for developed economies. As observed in the data points for Germany and the USA, there appears to be a positive correlation where years with higher carbon emissions tend to correspond with higher particulate pollution levels. This suggests that while economic development stage and environmental regulation may disconnect these measures globally, within similar economic systems, both types of emissions may share common drivers or respond to similar policy interventions. The USA exhibits the clearest positive correlation, with PM2.5 concentrations increasing alongside rising per capita CO₂ emissions, indicating that domestic pollution control efforts need to address both greenhouse gases and particulate matter simultaneously. This nuanced relationship highlights the importance of considering both global patterns and country-specific trends when developing environmental policies.
-
+Looking at the scatter plot of CO₂ emissions versus PM2.5 pollution exposure from 2010-2020 across China, Colombia, Germany, and the USA reveals complex relationships between these environmental indicators. While the overall cross-country comparison shows a counterintuitive pattern—with higher-emission countries like the USA having lower PM2.5 levels than lower-emission countries like China and Colombia—there are notable within-country correlations for developed economies. As observed in the data points for Germany and the USA, there appears to be a positive correlation where years with higher carbon emissions tend to correspond with higher particulate pollution levels. This suggests that while economic development stage and environmental regulation may disconnect these measures globally, within similar economic systems, both types of emissions may share common drivers or respond to similar policy interventions. The USA exhibits the clearest positive correlation, with PM2.5 concentrations increasing alongside rising per capita CO₂ emissions, indicating that domestic pollution control efforts need to address both greenhouse gases and particulate matter simultaneously. This nuanced relationship highlights the importance of considering both global patterns and country-specific trends when developing environmental policies.
 
 
 
