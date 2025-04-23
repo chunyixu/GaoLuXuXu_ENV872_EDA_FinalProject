@@ -40,7 +40,7 @@ Files are named according to the following naming convention:
 
 
 ## Metadata
-<For each data file in the repository, describe the data contained in each column. Include the column name, a description of the information, the class of data, and any units associated with the data. Create a list or table for each data file.> 
+<The dataset includes standardized fields for country, year, and key environmental indicators—CO₂ emissions, renewable energy use, and PM2.5 exposure—clearly labeled with appropriate units for cross-country analysis and modeling.> 
 
 **Main Processed Dataset (`Sus_Env_Processed.xlsx`):**
 
@@ -58,7 +58,6 @@ Files are named according to the following naming convention:
 - `PM`: µg/m³ (micrograms per cubic meter)
 
 ## Scripts and code
-<R scripts are leveraged in the repository for data wrangling, data exploration, data visualization, and data analysis.>
 All R scripts used for data handling and analysis are stored in the `/code/` directory. These scripts use the following packages:
 
 - `tidyverse`, `readxl`, `writexl` for data import and cleaning
